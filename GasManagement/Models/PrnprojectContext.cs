@@ -30,7 +30,7 @@ public partial class PrnprojectContext : DbContext
     public virtual DbSet<Vehicle> Vehicles { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Name=ConnectionStrings:MyCnn");
+        => optionsBuilder.UseSqlServer("Name=ConnectionStrings:Default");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
