@@ -1,3 +1,5 @@
+using GasManagement.Models;
+
 namespace GasManagement
 {
     public class Program
@@ -8,6 +10,9 @@ namespace GasManagement
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddDbContext<PrnprojectContext>();
+            builder.Services.AddScoped(typeof(PrnprojectContext));
 
             var app = builder.Build();
 
