@@ -23,5 +23,5 @@ public partial class Vehicle
 
     public virtual ICollection<InspectionRecord> InspectionRecords { get; set; } = new List<InspectionRecord>();
 
-    public virtual User Owner { get; set; } = null!;
+    public virtual User? Owner { get; set; } = null!;
 }

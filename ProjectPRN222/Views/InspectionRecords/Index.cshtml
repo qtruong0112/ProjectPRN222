@@ -59,13 +59,13 @@
                 @Html.DisplayFor(modelItem => item.Comments)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Inspector.UserId)
+                @Html.DisplayFor(modelItem => item.Inspector.FullName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Station.StationId)
+                @Html.DisplayFor(modelItem => item.Station.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Vehicle.VehicleId)
+                    @(item.Vehicle?.PlateNumber + " - " + item.Vehicle?.Owner?.FullName)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.RecordId">Edit</a> |

@@ -21,7 +21,7 @@ namespace ProjectPRN222.Controllers
         // GET: InspectionRecords
         public async Task<IActionResult> Index()
         {
-            var prnprojectContext = _context.InspectionRecords.Include(i => i.Inspector).Include(i => i.Station).Include(i => i.Vehicle);
+            var prnprojectContext = _context.InspectionRecords.Include(i => i.Inspector).Include(i => i.Station).Include(i => i.Vehicle).ThenInclude(v => v.Owner);
             return View(await prnprojectContext.ToListAsync());
         }
 
@@ -49,11 +49,20 @@ namespace ProjectPRN222.Controllers
         // GET: InspectionRecords/Create
         public IActionResult Create()
         {
-            ViewData["InspectorId"] = new SelectList(_context.Users, "UserId", "UserId");
-            ViewData["StationId"] = new SelectList(_context.InspectionStations, "StationId", "StationId");
-            ViewData["VehicleId"] = new SelectList(_context.Vehicles, "VehicleId", "VehicleId");
+            ViewData["InspectorId"] = new SelectList(_context.Users.Where(u => u.RoleId == 2), "UserId", "FullName"); // Worker
+            ViewData["StationId"] = new SelectList(_context.InspectionStations, "StationId", "Name");
+
+            // Hiển thị Vehicle kèm tên chủ xe
+            var vehicles = _context.Vehicles.Include(v => v.Owner).ToList();
+            ViewData["VehicleId"] = new SelectList(vehicles.Select(v => new
+            {
+                VehicleId = v.VehicleId,
+                Display = v.PlateNumber + " - " + v.Owner.FullName
+            }), "VehicleId", "Display");
+
             return View();
         }
+
 
         // POST: InspectionRecords/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
