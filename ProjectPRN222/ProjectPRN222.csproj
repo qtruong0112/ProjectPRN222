@@ -24,7 +24,6 @@
     <Folder Include="Views\Loggings\" />
     <Folder Include="Views\Notifications\" />
     <Folder Include="Views\Roles\" />
-    <Folder Include="Views\Vehicles\" />
     <Folder Include="Views\Users\" />
   </ItemGroup>
 
