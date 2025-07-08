@@ -15,6 +15,8 @@ public partial class PrnprojectContext : DbContext
     {
     }
 
+    public virtual DbSet<InspectionAppointment> InspectionAppointments { get; set; }
+
     public virtual DbSet<InspectionRecord> InspectionRecords { get; set; }
 
     public virtual DbSet<InspectionStation> InspectionStations { get; set; }
@@ -34,6 +36,37 @@ public partial class PrnprojectContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<InspectionAppointment>(entity =>
+        {
+            entity.HasKey(e => e.AppointmentId).HasName("PK__Inspecti__8ECDFCA26432405D");
+
+            entity.Property(e => e.AppointmentId).HasColumnName("AppointmentID");
+            entity.Property(e => e.AppointmentDate).HasColumnType("datetime");
+            entity.Property(e => e.Note).HasColumnType("text");
+            entity.Property(e => e.StationId).HasColumnName("StationID");
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasDefaultValue("Pending");
+            entity.Property(e => e.UserId).HasColumnName("UserID");
+            entity.Property(e => e.VehicleId).HasColumnName("VehicleID");
+
+            entity.HasOne(d => d.Station).WithMany(p => p.InspectionAppointments)
+                .HasForeignKey(d => d.StationId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Appointment_Station");
+
+            entity.HasOne(d => d.User).WithMany(p => p.InspectionAppointments)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Appointment_User");
+
+            entity.HasOne(d => d.Vehicle).WithMany(p => p.InspectionAppointments)
+                .HasForeignKey(d => d.VehicleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Appointment_Vehicle");
+        });
+
         modelBuilder.Entity<InspectionRecord>(entity =>
         {
             entity.HasKey(e => e.RecordId).HasName("PK__Inspecti__FBDF78C94E60AFFF");
