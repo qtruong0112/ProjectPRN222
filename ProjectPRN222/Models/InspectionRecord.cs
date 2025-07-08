@@ -23,9 +23,9 @@ public partial class InspectionRecord
 
     public string? Comments { get; set; }
 
-    public virtual User Inspector { get; set; } = null!;
+    public virtual User? Inspector { get; set; } = null!;
 
-    public virtual InspectionStation Station { get; set; } = null!;
+    public virtual InspectionStation? Station { get; set; } = null!;
 
-    public virtual Vehicle Vehicle { get; set; } = null!;
+    public virtual Vehicle? Vehicle { get; set; } = null!;
 }

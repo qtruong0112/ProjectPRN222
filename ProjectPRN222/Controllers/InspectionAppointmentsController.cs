@@ -49,15 +49,17 @@ namespace ProjectPRN222.Controllers
         // GET: InspectionAppointments/Create
         public IActionResult Create()
         {
-            ViewData["StationId"] = new SelectList(_context.InspectionStations, "StationId", "StationId");
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId");
-            ViewData["VehicleId"] = new SelectList(_context.Vehicles, "VehicleId", "VehicleId");
-            return View();
+            ViewData["StationId"] = new SelectList(_context.InspectionStations, "StationId", "Name");
+            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "FullName");
+            ViewData["VehicleId"] = new SelectList(_context.Vehicles, "VehicleId", "PlateNumber");
+            var model = new InspectionAppointment { Status = "Pending", AppointmentDate = DateTime.Now };
+            return View(model);
         }
 
         // POST: InspectionAppointments/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: InspectionAppointments/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("AppointmentId,VehicleId,UserId,StationId,AppointmentDate,Status,Note")] InspectionAppointment inspectionAppointment)
@@ -68,11 +70,24 @@ namespace ProjectPRN222.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["StationId"] = new SelectList(_context.InspectionStations, "StationId", "StationId", inspectionAppointment.StationId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId", inspectionAppointment.UserId);
-            ViewData["VehicleId"] = new SelectList(_context.Vehicles, "VehicleId", "VehicleId", inspectionAppointment.VehicleId);
+
+            // DEBUG: In lỗi ModelState
+            foreach (var key in ModelState.Keys)
+            {
+                var errors = ModelState[key].Errors;
+                foreach (var error in errors)
+                {
+                    Console.WriteLine($"Field: {key}, Error: {error.ErrorMessage}");
+                }
+            }
+
+            // Re-fill dropdowns if model state is invalid
+            ViewData["StationId"] = new SelectList(_context.InspectionStations, "StationId", "Name", inspectionAppointment.StationId);
+            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "FullName", inspectionAppointment.UserId);
+            ViewData["VehicleId"] = new SelectList(_context.Vehicles, "VehicleId", "PlateNumber", inspectionAppointment.VehicleId);
             return View(inspectionAppointment);
         }
+
 
         // GET: InspectionAppointments/Edit/5
         public async Task<IActionResult> Edit(int? id)
