@@ -31,6 +31,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.Vehicle)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Vehicle.Model)
+            </th>
+            <th>
+                 @Html.DisplayNameFor(model => model.Vehicle.Brand)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -47,14 +53,20 @@
                 @Html.DisplayFor(modelItem => item.Note)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Station.StationId)
+                @Html.DisplayFor(modelItem => item.Station.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.User.UserId)
+                @Html.DisplayFor(modelItem => item.User.FullName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Vehicle.VehicleId)
+                @Html.DisplayFor(modelItem => item.Vehicle.PlateNumber)
             </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Vehicle.Model)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Vehicle.Brand)
+                </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.AppointmentId">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.AppointmentId">Details</a> |
