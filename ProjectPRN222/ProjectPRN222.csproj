@@ -23,8 +23,6 @@
     <Folder Include="Views\InspectorStations\" />
     <Folder Include="Views\Loggings\" />
     <Folder Include="Views\Notifications\" />
-    <Folder Include="Views\Roles\" />
-    <Folder Include="Views\Users\" />
   </ItemGroup>
 
 </Project>
