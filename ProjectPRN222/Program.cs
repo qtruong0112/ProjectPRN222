@@ -13,6 +13,9 @@ namespace ProjectPRN222
 
             builder.Services.AddDbContext<PrnprojectContext>();
             builder.Services.AddScoped(typeof(PrnprojectContext));
+            builder.Services.AddSession();
+            builder.Services.AddHttpContextAccessor();
+
 
             var app = builder.Build();
 
@@ -30,6 +33,8 @@ namespace ProjectPRN222
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseSession();
 
             app.MapControllerRoute(
                 name: "default",

@@ -1,0 +1,30 @@
+﻿@model ProjectPRN222.Models.User
+@{
+    ViewBag.Title = "Register";
+}
+<h2>Register</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.LabelFor(m => m.FullName)
+    @Html.TextBoxFor(m => m.FullName)
+    <br />
+
+    @Html.LabelFor(m => m.Email)
+    @Html.TextBoxFor(m => m.Email)
+    <br />
+
+    @Html.LabelFor(m => m.Password)
+    @Html.PasswordFor(m => m.Password)
+    <br />
+
+    @Html.LabelFor(m => m.Phone)
+    @Html.PasswordFor(m => m.Phone)
+    <br />
+
+    @Html.LabelFor(m => m.Address)
+    @Html.PasswordFor(m => m.Address)
+    <br />
+
+    <input type="submit" value="Register" />
+}

@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -26,6 +29,36 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
+
+                    @{
+                        var fullName = HttpContextAccessor.HttpContext.Session.GetString("FullName");
+                    }
+
+                    <ul class="navbar-nav">
+                        @if (!string.IsNullOrEmpty(fullName))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    @fullName
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li><a class="dropdown-item" asp-controller="Accounts" asp-action="Edit" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetInt32("UserId")">Thay đổi thông tin</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Accounts" asp-action="Logout">Đăng xuất</a></li>
+                                </ul>
+
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Accounts" asp-action="Login">Đăng nhập</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Accounts" asp-action="Register">Đăng ký</a>
+                            </li>
+                        }
+                    </ul>
+
                 </div>
             </div>
         </nav>
