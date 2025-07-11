@@ -19,10 +19,143 @@ namespace ProjectPRN222.Controllers
         }
 
         // GET: InspectionRecords
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+            int StationId = -1,
+            string PlateNumber = null,
+            string Result = null,
+            DateTime? FromDate = null,
+            DateTime? ToDate = null)
         {
-            var prnprojectContext = _context.InspectionRecords.Include(i => i.Inspector).Include(i => i.Station).Include(i => i.Vehicle).ThenInclude(v => v.Owner);
-            return View(await prnprojectContext.ToListAsync());
+            var query = _context.InspectionRecords
+                .Include(i => i.Inspector)
+                .Include(i => i.Station)
+                .Include(i => i.Vehicle)
+                    .ThenInclude(v => v.Owner)
+                .AsQueryable();
+
+            if (StationId > 0)
+            {
+                query = query.Where(i => i.StationId == StationId);
+            }
+
+            if (!string.IsNullOrWhiteSpace(PlateNumber))
+            {
+                query = query.Where(i => i.Vehicle.PlateNumber.Contains(PlateNumber));
+            }
+
+            if (!string.IsNullOrWhiteSpace(Result))
+            {
+                query = query.Where(i => i.Result == Result);
+            }
+
+            if (FromDate.HasValue)
+            {
+                query = query.Where(i => i.InspectionDate >= FromDate.Value);
+            }
+
+            if (ToDate.HasValue)
+            {
+                query = query.Where(i => i.InspectionDate <= ToDate.Value);
+            }
+
+            ViewBag.StationId = new SelectList(_context.InspectionStations.ToList(), "StationId", "Name", StationId);
+            ViewBag.PlateNumber = PlateNumber;
+            ViewBag.ResultList = new SelectList(new List<SelectListItem>
+            {
+                new SelectListItem { Text = "-- Tất cả kết quả --", Value = "" },
+                new SelectListItem { Text = "Pass", Value = "Pass" },
+                new SelectListItem { Text = "Fail", Value = "Fail" }
+}           , "Value", "Text", Result);
+
+            ViewBag.FromDate = FromDate?.ToString("yyyy-MM-dd");
+            ViewBag.ToDate = ToDate?.ToString("yyyy-MM-dd");
+
+            return View(await query.ToListAsync());
+        }
+
+        // GET: InspectionRecords/ForPolice
+        public async Task<IActionResult> ForPolice(string plateNumber)
+        {
+            if (string.IsNullOrWhiteSpace(plateNumber))
+            {
+                ViewBag.Message = "Vui lòng nhập biển số xe để tra cứu.";
+                return View(null);
+            }
+
+            var vehicle = await _context.Vehicles
+                .Include(v => v.Owner)
+                .FirstOrDefaultAsync(v => v.PlateNumber == plateNumber);
+
+            if (vehicle == null)
+            {
+                ViewBag.Message = "Không tìm thấy phương tiện với biển số này.";
+                return View(null);
+            }
+
+            var latestRecord = await _context.InspectionRecords
+                .Where(r => r.VehicleId == vehicle.VehicleId)
+                .OrderByDescending(r => r.InspectionDate)
+                .FirstOrDefaultAsync();
+
+            string status = "Không vi phạm";
+
+            if (latestRecord == null)
+            {
+                status = "Chưa từng đăng kiểm - Vi phạm";
+            }
+            else if (latestRecord.Result == "Fail")
+            {
+                status = "Đăng kiểm gần nhất là 'Fail' - Vi phạm";
+            }
+            else if (latestRecord.Result == "Pass" &&
+                latestRecord.InspectionDate.HasValue &&
+                latestRecord.InspectionDate.Value.AddMonths(6) < DateTime.Now)
+            {
+                status = "Đã hết hạn đăng kiểm - Vi phạm";
+            }
+
+            ViewBag.Vehicle = vehicle;
+
+            ViewBag.LatestRecord = latestRecord;
+            ViewBag.Status = status;
+
+            return View();
+        }
+
+        public async Task<IActionResult> ForOwnerVehicle(string plateNumber)
+        {
+            if (string.IsNullOrWhiteSpace(plateNumber))
+            {
+                ViewBag.Message = "Vui lòng nhập biển số xe để tra cứu.";
+                return View(null);
+            }
+
+            var vehicle = await _context.Vehicles
+                .Include(v => v.Owner)
+                .FirstOrDefaultAsync(v => v.PlateNumber == plateNumber);
+
+            if (vehicle == null)
+            {
+                ViewBag.Message = "Không tìm thấy phương tiện với biển số này.";
+                return View(null);
+            }
+
+            var records = await _context.InspectionRecords
+                .Include(r => r.Inspector)
+                .Include(r => r.Station)
+                .Include(r => r.Vehicle).ThenInclude(v => v.Owner)
+                .Where(r => r.VehicleId == vehicle.VehicleId)
+                .OrderByDescending(r => r.InspectionDate)
+                .ToListAsync();
+
+            if (records == null || records.Count == 0)
+            {
+                ViewBag.Message = "Xe chưa từng đăng kiểm.";
+                return View(null);
+            }
+
+            ViewBag.Vehicle = vehicle;
+            return View(records);
         }
 
         // GET: InspectionRecords/Details/5

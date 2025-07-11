@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "Tra cứu vi phạm đăng kiểm";
+}
+
+<h2>Tra cứu thông tin đăng kiểm</h2>
+
+<form asp-action="ForPolice" method="get" class="form-inline mb-3">
+    <input type="text" name="plateNumber" class="form-control mr-2" placeholder="Nhập biển số xe" />
+    <button type="submit" class="btn btn-primary">Tra cứu</button>
+</form>
+
+@if (!string.IsNullOrEmpty(ViewBag.Message))
+{
+    <div class="alert alert-warning">@ViewBag.Message</div>
+}
+else if (ViewBag.Vehicle != null)
+{
+    <div class="card">
+        <div class="card-body">
+            <h5>Thông tin phương tiện:</h5>
+            <p><strong>Biển số:</strong> @ViewBag.Vehicle.PlateNumber</p>
+            <p><strong>Chủ xe:</strong> @ViewBag.Vehicle.Owner.FullName</p>
+
+            <h5 class="mt-3">Kết quả đăng kiểm gần nhất:</h5>
+            @if (ViewBag.LatestRecord != null)
+            {
+                <p><strong>Ngày đăng kiểm:</strong> @(((DateTime)ViewBag.LatestRecord.InspectionDate).ToString("dd/MM/yyyy"))</p>
+                <p><strong>Kết quả:</strong> @ViewBag.LatestRecord.Result</p>
+            }
+            else
+            {
+                <p>Chưa từng đăng kiểm.</p>
+            }
+
+            <h4 class="mt-3 text-danger">Trạng thái: @ViewBag.Status</h4>
+        </div>
+    </div>
+}
