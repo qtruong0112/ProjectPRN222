@@ -1,11 +1,40 @@
 ﻿@model IEnumerable<ProjectPRN222.Models.InspectionRecord>
 
-@{
-    ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
 
-<h1>Index</h1>
+
+<h1>Kết quả kiểm định</h1>
+
+<div class="row mb-3">
+    <div class="col-md-12">
+        <form asp-action="Index" method="get" class="form-inline">
+            <div class="form-group mx-sm-2 mb-2">
+                <input type="text" name="PlateNumber" value="@ViewBag.PlateNumber" class="form-control" placeholder="Biển số xe" />
+            </div>
+
+            <div class="form-group mx-sm-2 mb-2">
+                <select name="Result" class="form-control" asp-items="ViewBag.ResultList"></select>
+            </div>
+
+            <div class="form-group mx-sm-2 mb-2">
+                <input type="date" name="FromDate" value="@ViewBag.FromDate" class="form-control" />
+            </div>
+
+            <div class="form-group mx-sm-2 mb-2">
+                <input type="date" name="ToDate" value="@ViewBag.ToDate" class="form-control" />
+            </div>
+
+            <div class="form-group mx-sm-2 mb-2">
+                <select name="StationId" class="form-control" asp-items="@ViewBag.StationId">
+                    <option value="-1">-- Tất cả cơ sở --</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary mb-2">Tìm kiếm</button>
+        </form>
+    </div>
+</div>
+
+
 
 <p>
     <a asp-action="Create">Create New</a>

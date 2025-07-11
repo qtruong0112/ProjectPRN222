@@ -1,0 +1,63 @@
+﻿@model List<ProjectPRN222.Models.InspectionRecord>
+
+
+@{
+    ViewData["Title"] = "Kết quả đăng kiểm";
+}
+
+<h2>Kết quả đăng kiểm phương tiện</h2>
+
+<form asp-action="ForOwnerVehicle" method="get" class="form-inline mb-3">
+    <input type="text" name="plateNumber" class="form-control mr-2" placeholder="Nhập biển số xe" />
+    <button type="submit" class="btn btn-primary">Tra cứu</button>
+</form>
+
+@if (!string.IsNullOrEmpty(ViewBag.Message))
+{
+    <div class="alert alert-info">@ViewBag.Message</div>
+}
+else if (Model != null && Model.Count > 0)
+{
+    var vehicle = ViewBag.Vehicle as ProjectPRN222.Models.Vehicle;
+    
+    if (vehicle != null)
+    {
+        <h4>Thông tin phương tiện:</h4>
+        <dl class="row">
+            <dt class="col-sm-3">Biển số xe</dt>
+            <dd class="col-sm-9">@vehicle.PlateNumber</dd>
+
+            <dt class="col-sm-3">Chủ xe</dt>
+            <dd class="col-sm-9">@vehicle.Owner.FullName</dd>
+        </dl>
+    }
+
+    <h4>Lịch sử đăng kiểm:</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Ngày đăng kiểm</th>
+                <th>Kết quả</th>
+                <th>CO2</th>
+                <th>HC</th>
+                <th>Ghi chú</th>
+                <th>Trạm</th>
+                <th>Người kiểm định</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var record in Model)
+            {
+                <tr>
+                    <td>@record.InspectionDate?.ToShortDateString()</td>
+                    <td>@record.Result</td>
+                    <td>@record.Co2emission</td>
+                    <td>@record.Hcemission</td>
+                    <td>@record.Comments</td>
+                    <td>@record.Station.Name</td>
+                    <td>@record.Inspector.FullName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
