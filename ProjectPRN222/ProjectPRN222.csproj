@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\InspectorStations\**" />
+    <Content Remove="Views\InspectorStations\**" />
+    <EmbeddedResource Remove="Views\InspectorStations\**" />
+    <None Remove="Views\InspectorStations\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.6">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -20,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\InspectorStations\" />
     <Folder Include="Views\Loggings\" />
     <Folder Include="Views\Notifications\" />
   </ItemGroup>
