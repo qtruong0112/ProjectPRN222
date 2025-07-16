@@ -176,8 +176,49 @@ namespace ProjectPRN222.Controllers
                 return NotFound();
             }
 
+
             return View(inspectionRecord);
         }
+
+
+        public async Task<IActionResult> CreateFromAppointment(int appointmentId)
+        {
+            var appointment = await _context.InspectionAppointments
+                .Include(a => a.User)
+                .Include(a => a.Station)
+                .Include(a => a.Vehicle)
+                .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId);
+
+            if (appointment == null)
+                return NotFound();
+
+            ViewData["VehicleId"] = new SelectList(_context.Vehicles, "VehicleId", "PlateNumber", appointment.VehicleId);
+            ViewData["StationId"] = new SelectList(_context.InspectionStations, "StationId", "Name", appointment.StationId);
+            ViewData["InspectorId"] = new SelectList(_context.Users.Where(u => u.RoleId == 2), "UserId", "FullName");
+
+            var record = new InspectionRecord
+            {
+                VehicleId = appointment.VehicleId,
+                StationId = appointment.StationId,
+                InspectionDate = appointment.AppointmentDate
+               
+            };
+
+           if( appointmentId > 0)
+            {
+                appointment = await _context.InspectionAppointments.FindAsync(appointmentId);
+                if (appointment != null)
+                {
+                    appointment.Status = "Completed"; 
+                    _context.Update(appointment);
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            return View("Create", record);
+        }
+
+
 
         // GET: InspectionRecords/Create
         public IActionResult Create()

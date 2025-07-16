@@ -21,6 +21,15 @@
     }
 </style>
 
+@if (TempData["DeleteError"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-circle-fill"></i>
+        @TempData["DeleteError"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 <div class="container py-4">
     <h2 class="mb-4 text-center text-info fw-bold">
         <i class="bi bi-car-front"></i> Danh sách xe
@@ -62,6 +71,7 @@
                             <a asp-action="Delete" asp-route-id="@item.VehicleId" class="btn btn-sm btn-danger">
                                 <i class="bi bi-trash"></i>
                             </a>
+                            
                         </td>
                     </tr>
                 }

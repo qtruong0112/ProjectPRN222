@@ -66,6 +66,12 @@
                             <a asp-action="Delete" asp-route-id="@item.AppointmentId" class="btn btn-sm btn-danger">
                                 <i class="bi bi-trash"></i>
                             </a>
+                            @if (item.Status == "Pending")
+                            {
+                                <a asp-controller="InspectionRecords" asp-action="CreateFromAppointment" asp-route-appointmentId="@item.AppointmentId" class="btn btn-success btn-sm">
+                                    <i class="bi bi-clipboard-plus"></i> Tạo phiếu kiểm định
+                                </a>
+                            }
                         </td>
                     </tr>
                 }
