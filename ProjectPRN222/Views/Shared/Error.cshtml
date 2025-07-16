@@ -3,23 +3,44 @@
     ViewData["Title"] = "Error";
 }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow rounded-4">
+                <div class="card-header bg-danger text-white rounded-top-4 d-flex align-items-center">
+                    <i class="bi bi-exclamation-triangle-fill me-2 fs-4"></i>
+                    <span class="fs-5 fw-semibold">Oops! Something went wrong</span>
+                </div>
+                <div class="card-body">
+                    <p class="fs-5 text-danger mb-3">An error occurred while processing your request.</p>
+                    @if (Model.ShowRequestId)
+                    {
+                        <p class="mb-3">
+                            <strong>Request ID:</strong> <code class="bg-light px-2 py-1 rounded">@Model.RequestId</code>
+                        </p>
+                    }
+                    <div class="alert alert-warning rounded-3">
+                        <h6 class="mb-2"><i class="bi bi-tools me-1"></i> Development Mode</h6>
+                        <p class="mb-1">
+                            Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
+                        </p>
+                        <p class="mb-0">
+                            <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
+                            It can result in displaying sensitive information from exceptions to end users.<br />
+                            For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
+                            and restarting the app.
+                        </p>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent d-flex justify-content-end rounded-bottom-4">
+                    <a href="/" class="btn btn-outline-danger rounded-pill px-4">
+                        <i class="bi bi-house-door me-1"></i> Return Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-@if (Model.ShowRequestId)
-{
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
-    </p>
-}
-
-<h3>Development Mode</h3>
-<p>
-    Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
-</p>
-<p>
-    <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
-    It can result in displaying sensitive information from exceptions to end users.
-    For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
-    and restarting the app.
-</p>
+<!-- Bootstrap Icons CDN (if not already included in _Layout) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">

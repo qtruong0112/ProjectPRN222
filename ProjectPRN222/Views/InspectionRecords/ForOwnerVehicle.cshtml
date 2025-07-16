@@ -1,63 +1,81 @@
 ﻿@model List<ProjectPRN222.Models.InspectionRecord>
 
-
 @{
     ViewData["Title"] = "Kết quả đăng kiểm";
 }
 
-<h2>Kết quả đăng kiểm phương tiện</h2>
+<div class="container py-4">
+    <h2 class="mb-4 text-center">Kết quả đăng kiểm phương tiện</h2>
 
-<form asp-action="ForOwnerVehicle" method="get" class="form-inline mb-3">
-    <input type="text" name="plateNumber" class="form-control mr-2" placeholder="Nhập biển số xe" />
-    <button type="submit" class="btn btn-primary">Tra cứu</button>
-</form>
+    <form asp-action="ForOwnerVehicle" method="get" class="row g-2 justify-content-center mb-4">
+        <div class="col-12 col-sm-8 col-md-6">
+            <input type="text" name="plateNumber" class="form-control rounded-3" placeholder="Nhập biển số xe" />
+        </div>
+        <div class="col-12 col-sm-auto">
+            <button type="submit" class="btn btn-primary w-100 rounded-pill">
+                <i class="bi bi-search me-1"></i> Tra cứu
+            </button>
+        </div>
+    </form>
 
-@if (!string.IsNullOrEmpty(ViewBag.Message))
-{
-    <div class="alert alert-info">@ViewBag.Message</div>
-}
-else if (Model != null && Model.Count > 0)
-{
-    var vehicle = ViewBag.Vehicle as ProjectPRN222.Models.Vehicle;
-    
-    if (vehicle != null)
+    @if (!string.IsNullOrEmpty(ViewBag.Message))
     {
-        <h4>Thông tin phương tiện:</h4>
-        <dl class="row">
-            <dt class="col-sm-3">Biển số xe</dt>
-            <dd class="col-sm-9">@vehicle.PlateNumber</dd>
-
-            <dt class="col-sm-3">Chủ xe</dt>
-            <dd class="col-sm-9">@vehicle.Owner.FullName</dd>
-        </dl>
+        <div class="alert alert-info text-center">@ViewBag.Message</div>
     }
+    else if (Model != null && Model.Count > 0)
+    {
+        var vehicle = ViewBag.Vehicle as ProjectPRN222.Models.Vehicle;
+        
+        if (vehicle != null)
+        {
+            <div class="card mb-4 shadow rounded-4 overflow-hidden">
+                <div class="card-header bg-primary text-white fw-bold rounded-top-4">Thông tin phương tiện</div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Biển số xe</dt>
+                        <dd class="col-sm-8">@vehicle.PlateNumber</dd>
 
-    <h4>Lịch sử đăng kiểm:</h4>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Ngày đăng kiểm</th>
-                <th>Kết quả</th>
-                <th>CO2</th>
-                <th>HC</th>
-                <th>Ghi chú</th>
-                <th>Trạm</th>
-                <th>Người kiểm định</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var record in Model)
-            {
-                <tr>
-                    <td>@record.InspectionDate?.ToShortDateString()</td>
-                    <td>@record.Result</td>
-                    <td>@record.Co2emission</td>
-                    <td>@record.Hcemission</td>
-                    <td>@record.Comments</td>
-                    <td>@record.Station.Name</td>
-                    <td>@record.Inspector.FullName</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+                        <dt class="col-sm-4">Chủ xe</dt>
+                        <dd class="col-sm-8">@vehicle.Owner.FullName</dd>
+                    </dl>
+                </div>
+            </div>
+        }
+
+        <div class="card shadow rounded-4 overflow-hidden">
+            <div class="card-header bg-success text-white fw-bold rounded-top-4">Lịch sử đăng kiểm</div>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped mb-0 align-middle text-center">
+                    <thead class="table-success">
+                        <tr>
+                            <th>Ngày đăng kiểm</th>
+                            <th>Kết quả</th>
+                            <th>CO2</th>
+                            <th>HC</th>
+                            <th>Ghi chú</th>
+                            <th>Trạm</th>
+                            <th>Người kiểm định</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var record in Model)
+                        {
+                            <tr>
+                                <td>@record.InspectionDate?.ToShortDateString()</td>
+                                <td>@record.Result</td>
+                                <td>@record.Co2emission</td>
+                                <td>@record.Hcemission</td>
+                                <td>@record.Comments</td>
+                                <td>@record.Station.Name</td>
+                                <td>@record.Inspector.FullName</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Bootstrap Icons CDN (if not already included in _Layout) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
