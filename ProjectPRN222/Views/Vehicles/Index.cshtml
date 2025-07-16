@@ -1,66 +1,74 @@
 ﻿@model IEnumerable<ProjectPRN222.Models.Vehicle>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Danh sách xe";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<style>
+    .custom-rounded-table {
+        border-radius: 1rem !important;
+        overflow: hidden;
+    }
+    .custom-rounded-table thead tr:first-child th:first-child {
+        border-top-left-radius: 1rem;
+    }
+    .custom-rounded-table thead tr:first-child th:last-child {
+        border-top-right-radius: 1rem;
+    }
+    .table-hover tbody tr:hover {
+        background-color: #e3f2fd;
+    }
+</style>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.PlateNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Brand)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Model)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ManufactureYear)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EngineNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Owner)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.PlateNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Brand)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Model)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ManufactureYear)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EngineNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Owner.UserId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.VehicleId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.VehicleId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.VehicleId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="container py-4">
+    <h2 class="mb-4 text-center text-info fw-bold">
+        <i class="bi bi-car-front"></i> Danh sách xe
+    </h2>
+    <div class="mb-3 text-end">
+        <a asp-action="Create" class="btn btn-info fw-bold text-white">
+            <i class="bi bi-plus-circle me-1"></i> Thêm xe mới
+        </a>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle text-center custom-rounded-table">
+            <thead class="bg-info text-white">
+                <tr>
+                    <th><i class="bi bi-123"></i> @Html.DisplayNameFor(model => model.PlateNumber)</th>
+                    <th><i class="bi bi-award"></i> @Html.DisplayNameFor(model => model.Brand)</th>
+                    <th><i class="bi bi-gear"></i> @Html.DisplayNameFor(model => model.Model)</th>
+                    <th><i class="bi bi-calendar"></i> @Html.DisplayNameFor(model => model.ManufactureYear)</th>
+                    <th><i class="bi bi-cpu"></i> @Html.DisplayNameFor(model => model.EngineNumber)</th>
+                    <th><i class="bi bi-person"></i> @Html.DisplayNameFor(model => model.Owner)</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model) {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.PlateNumber)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Brand)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Model)</td>
+                        <td>@Html.DisplayFor(modelItem => item.ManufactureYear)</td>
+                        <td>@Html.DisplayFor(modelItem => item.EngineNumber)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Owner.UserId)</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.VehicleId" class="btn btn-sm btn-info text-white me-1">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a asp-action="Details" asp-route-id="@item.VehicleId" class="btn btn-sm btn-warning text-white me-1">
+                                <i class="bi bi-info-circle"></i>
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.VehicleId" class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Bootstrap Icons CDN (nếu chưa có) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">

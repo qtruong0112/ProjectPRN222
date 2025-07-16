@@ -46,3 +46,64 @@ button.accept-policy {
   white-space: nowrap;
   line-height: 60px;
 }
+
+/* Navbar hiện đại, thân thiện */
+.animate-navbar {
+  transition: box-shadow 0.2s, background 0.2s;
+}
+.navbar.bg-info {
+  background: linear-gradient(90deg, #36d1c4 0%, #5b86e5 100%) !important;
+  border-bottom-left-radius: 1.5rem;
+  border-bottom-right-radius: 1.5rem;
+}
+.navbar .navbar-brand {
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.navbar .nav-link-custom {
+  color: #fff !important;
+  font-weight: 500;
+  border-radius: 1.5rem;
+  padding: 0.5rem 1.1rem;
+  transition: background 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.navbar .nav-link-custom:hover, .navbar .nav-link-custom.active {
+  background: rgba(255,255,255,0.18);
+  color: #fff !important;
+}
+.navbar .dropdown-menu {
+  border-radius: 1rem;
+  box-shadow: 0 4px 24px rgba(91,134,229,0.12);
+  min-width: 200px;
+  animation: fadeIn 0.2s;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+.navbar .dropdown-item {
+  border-radius: 0.75rem;
+  transition: background 0.15s;
+}
+.navbar .dropdown-item:hover {
+  background: #e3f2fd;
+  color: #1861ac;
+}
+.navbar .navbar-toggler {
+  border-radius: 1rem;
+  background: rgba(255,255,255,0.2);
+}
+
+/* Responsive chỉnh lại padding */
+@media (max-width: 991.98px) {
+  .navbar .navbar-nav .nav-link-custom {
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+  }
+}

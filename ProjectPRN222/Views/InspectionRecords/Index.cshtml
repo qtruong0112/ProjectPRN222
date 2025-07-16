@@ -1,107 +1,90 @@
 ﻿@model IEnumerable<ProjectPRN222.Models.InspectionRecord>
 
-
-
-<h1>Kết quả kiểm định</h1>
-
-<div class="row mb-3">
-    <div class="col-md-12">
-        <form asp-action="Index" method="get" class="form-inline">
-            <div class="form-group mx-sm-2 mb-2">
-                <input type="text" name="PlateNumber" value="@ViewBag.PlateNumber" class="form-control" placeholder="Biển số xe" />
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card shadow rounded-4 mb-4">
+                <div class="card-header bg-primary text-white rounded-top-4 d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-clipboard2-data me-2"></i>
+                        <span class="fs-5 fw-semibold">Kết quả kiểm định</span>
+                    </div>
+                    <a asp-action="Create" class="btn btn-success rounded-pill px-4">
+                        <i class="bi bi-plus-circle me-1"></i> Create New
+                    </a>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Index" method="get" class="row g-2 align-items-end mb-4">
+                        <div class="col-md-2">
+                            <input type="text" name="PlateNumber" value="@ViewBag.PlateNumber" class="form-control rounded-3" placeholder="Biển số xe" />
+                        </div>
+                        <div class="col-md-2">
+                            <select name="Result" class="form-select rounded-3" asp-items="ViewBag.ResultList"></select>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="date" name="FromDate" value="@ViewBag.FromDate" class="form-control rounded-3" />
+                        </div>
+                        <div class="col-md-2">
+                            <input type="date" name="ToDate" value="@ViewBag.ToDate" class="form-control rounded-3" />
+                        </div>
+                        <div class="col-md-2">
+                            <select name="StationId" class="form-select rounded-3" asp-items="@ViewBag.StationId">
+                                <option value="-1">-- Tất cả cơ sở --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary rounded-pill w-100">
+                                <i class="bi bi-search me-1"></i> Tìm kiếm
+                            </button>
+                        </div>
+                    </form>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.FirstOrDefault().InspectionDate)</th>
+                                    <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Result)</th>
+                                    <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Co2emission)</th>
+                                    <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Hcemission)</th>
+                                    <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Comments)</th>
+                                    <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Inspector)</th>
+                                    <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Station)</th>
+                                    <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Vehicle)</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model) {
+                                    <tr>
+                                        <td>@Html.DisplayFor(modelItem => item.InspectionDate)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Result)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Co2emission)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Hcemission)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Comments)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Inspector.FullName)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Station.Name)</td>
+                                        <td>@(item.Vehicle?.PlateNumber + " - " + item.Vehicle?.Owner?.FullName)</td>
+                                        <td class="text-end">
+                                            <a asp-action="Edit" asp-route-id="@item.RecordId" class="btn btn-warning btn-sm rounded-pill me-1">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            <a asp-action="Details" asp-route-id="@item.RecordId" class="btn btn-info btn-sm rounded-pill me-1 text-white">
+                                                <i class="bi bi-info-circle"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.RecordId" class="btn btn-danger btn-sm rounded-pill">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-
-            <div class="form-group mx-sm-2 mb-2">
-                <select name="Result" class="form-control" asp-items="ViewBag.ResultList"></select>
-            </div>
-
-            <div class="form-group mx-sm-2 mb-2">
-                <input type="date" name="FromDate" value="@ViewBag.FromDate" class="form-control" />
-            </div>
-
-            <div class="form-group mx-sm-2 mb-2">
-                <input type="date" name="ToDate" value="@ViewBag.ToDate" class="form-control" />
-            </div>
-
-            <div class="form-group mx-sm-2 mb-2">
-                <select name="StationId" class="form-control" asp-items="@ViewBag.StationId">
-                    <option value="-1">-- Tất cả cơ sở --</option>
-                </select>
-            </div>
-
-            <button type="submit" class="btn btn-primary mb-2">Tìm kiếm</button>
-        </form>
+        </div>
     </div>
 </div>
 
-
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.InspectionDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Result)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Co2emission)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Hcemission)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Comments)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Inspector)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Station)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Vehicle)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.InspectionDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Result)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Co2emission)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Hcemission)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Comments)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Inspector.FullName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Station.Name)
-            </td>
-            <td>
-                    @(item.Vehicle?.PlateNumber + " - " + item.Vehicle?.Owner?.FullName)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.RecordId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.RecordId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.RecordId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<!-- Bootstrap Icons CDN (if not already included in _Layout) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">

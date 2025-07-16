@@ -2,37 +2,80 @@
     ViewData["Title"] = "Tra cứu vi phạm đăng kiểm";
 }
 
-<h2>Tra cứu thông tin đăng kiểm</h2>
+<div class="container py-4">
+    <h2 class="mb-4 text-center">Tra cứu thông tin đăng kiểm</h2>
 
-<form asp-action="ForPolice" method="get" class="form-inline mb-3">
-    <input type="text" name="plateNumber" class="form-control mr-2" placeholder="Nhập biển số xe" />
-    <button type="submit" class="btn btn-primary">Tra cứu</button>
-</form>
-
-@if (!string.IsNullOrEmpty(ViewBag.Message))
-{
-    <div class="alert alert-warning">@ViewBag.Message</div>
-}
-else if (ViewBag.Vehicle != null)
-{
-    <div class="card">
-        <div class="card-body">
-            <h5>Thông tin phương tiện:</h5>
-            <p><strong>Biển số:</strong> @ViewBag.Vehicle.PlateNumber</p>
-            <p><strong>Chủ xe:</strong> @ViewBag.Vehicle.Owner.FullName</p>
-
-            <h5 class="mt-3">Kết quả đăng kiểm gần nhất:</h5>
-            @if (ViewBag.LatestRecord != null)
-            {
-                <p><strong>Ngày đăng kiểm:</strong> @(((DateTime)ViewBag.LatestRecord.InspectionDate).ToString("dd/MM/yyyy"))</p>
-                <p><strong>Kết quả:</strong> @ViewBag.LatestRecord.Result</p>
-            }
-            else
-            {
-                <p>Chưa từng đăng kiểm.</p>
-            }
-
-            <h4 class="mt-3 text-danger">Trạng thái: @ViewBag.Status</h4>
+    <div class="row justify-content-center mb-4">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-7">
+            <form asp-action="ForPolice" method="get" class="row g-2 align-items-end">
+                <div class="col-12 col-sm-8">
+                    <input type="text" name="plateNumber" class="form-control rounded-3" placeholder="Nhập biển số xe" />
+                </div>
+                <div class="col-12 col-sm-4">
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill">
+                        <i class="bi bi-search me-1"></i> Tra cứu
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-}
+
+    @if (!string.IsNullOrEmpty(ViewBag.Message))
+    {
+        <div class="alert alert-warning text-center">@ViewBag.Message</div>
+    }
+    else if (ViewBag.Vehicle != null)
+    {
+        <div class="mx-auto" style="max-width: 700px;">
+            <div class="card shadow rounded-4 overflow-hidden mb-4">
+                <div class="card-header bg-primary text-white fw-bold rounded-top-4 text-center">Thông tin phương tiện</div>
+                <div class="card-body p-0">
+                    <table class="table table-bordered mb-0">
+                        <tbody>
+                            <tr>
+                                <th class="w-50">Biển số</th>
+                                <td>@ViewBag.Vehicle.PlateNumber</td>
+                            </tr>
+                            <tr>
+                                <th>Chủ xe</th>
+                                <td>@ViewBag.Vehicle.Owner.FullName</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card shadow rounded-4 overflow-hidden mb-4">
+                <div class="card-header bg-success text-white fw-bold rounded-top-4 text-center">Kết quả đăng kiểm gần nhất</div>
+                <div class="card-body p-0">
+                    <table class="table table-bordered mb-0 text-center align-middle">
+                        <thead class="table-success">
+                            <tr>
+                                <th>Ngày đăng kiểm</th>
+                                <th>Kết quả</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewBag.LatestRecord != null)
+                            {
+                                <tr>
+                                    <td>@(((DateTime)ViewBag.LatestRecord.InspectionDate).ToString("dd/MM/yyyy"))</td>
+                                    <td>@ViewBag.LatestRecord.Result</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="2" class="text-center">Chưa từng đăng kiểm.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <h4 class="mt-4 text-danger text-center">Trạng thái: @ViewBag.Status</h4>
+        </div>
+    }
+</div>
+
+<!-- Bootstrap Icons CDN (if not already included in _Layout) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
