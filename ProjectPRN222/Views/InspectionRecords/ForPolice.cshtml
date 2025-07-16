@@ -26,8 +26,7 @@
     }
     else if (ViewBag.Vehicle != null)
     {
-        <div class="mx-auto" style="max-width: 700px;">
-            <div class="card shadow rounded-4 overflow-hidden mb-4">
+        <div class="card shadow rounded-4 overflow-hidden mb-4">
                 <div class="card-header bg-primary text-white fw-bold rounded-top-4 text-center">Thông tin phương tiện</div>
                 <div class="card-body p-0">
                     <table class="table table-bordered mb-0">
@@ -46,12 +45,12 @@
             </div>
             <div class="card shadow rounded-4 overflow-hidden mb-4">
                 <div class="card-header bg-success text-white fw-bold rounded-top-4 text-center">Kết quả đăng kiểm gần nhất</div>
-                <div class="card-body p-0">
-                    <table class="table table-bordered mb-0 text-center align-middle">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped mb-0 align-middle text-center">
                         <thead class="table-success">
                             <tr>
-                                <th>Ngày đăng kiểm</th>
-                                <th>Kết quả</th>
+                                <th style="width: 50%;">Ngày đăng kiểm</th>
+                                <th style="width: 50%;">Kết quả</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -72,8 +71,7 @@
                     </table>
                 </div>
             </div>
-            <h4 class="mt-4 text-danger text-center">Trạng thái: @ViewBag.Status</h4>
-        </div>
+        <h4 class="mt-4 text-danger text-center">Trạng thái: @ViewBag.Status</h4>
     }
 </div>
 
