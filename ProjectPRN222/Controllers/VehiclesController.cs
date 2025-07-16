@@ -146,13 +146,23 @@ namespace ProjectPRN222.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var vehicle = await _context.Vehicles.FindAsync(id);
-            if (vehicle != null)
+            if (vehicle == null)
             {
-                _context.Vehicles.Remove(vehicle);
+                return NotFound();
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                _context.Vehicles.Remove(vehicle);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                TempData["DeleteError"] = "Không thể xoá xe vì đã tồn tại trong lịch sử đăng ký kiểm định.";
+                return RedirectToAction("Index", "Vehicles");
+            }
+            
         }
 
         private bool VehicleExists(int id)
