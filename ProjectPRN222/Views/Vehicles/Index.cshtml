@@ -60,7 +60,7 @@
                         <td>@Html.DisplayFor(modelItem => item.Model)</td>
                         <td>@Html.DisplayFor(modelItem => item.ManufactureYear)</td>
                         <td>@Html.DisplayFor(modelItem => item.EngineNumber)</td>
-                        <td>@Html.DisplayFor(modelItem => item.Owner.UserId)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Owner.FullName)</td>
                         <td>
                             <a asp-action="Edit" asp-route-id="@item.VehicleId" class="btn btn-sm btn-info text-white me-1">
                                 <i class="bi bi-pencil-square"></i>
