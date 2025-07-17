@@ -1,4 +1,6 @@
 using ProjectPRN222.Models;
+using ProjectPRN222.Hubs;
+using ProjectPRN222.Services;
 
 namespace ProjectPRN222
 {
@@ -16,6 +18,12 @@ namespace ProjectPRN222
             builder.Services.AddSession();
             builder.Services.AddHttpContextAccessor();
 
+            // Add SignalR
+            builder.Services.AddSignalR();
+            builder.Services.AddScoped<NotificationService>();
+            
+            // Add Background Service
+            builder.Services.AddHostedService<InspectionReminderService>();
 
             var app = builder.Build();
 
@@ -39,6 +47,9 @@ namespace ProjectPRN222
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            // Map SignalR Hub
+            app.MapHub<NotificationHub>("/notificationHub");
 
             app.Run();
         }

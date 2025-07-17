@@ -6,16 +6,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ProjectPRN222.Models;
+using ProjectPRN222.Services;
 
 namespace ProjectPRN222.Controllers
 {
     public class InspectionRecordsController : Controller
     {
         private readonly PrnprojectContext _context;
+        private readonly NotificationService _notificationService;
 
-        public InspectionRecordsController(PrnprojectContext context)
+        public InspectionRecordsController(PrnprojectContext context, NotificationService notificationService)
         {
             _context = context;
+            _notificationService = notificationService;
         }
 
         // GET: InspectionRecords
@@ -249,6 +252,30 @@ namespace ProjectPRN222.Controllers
             {
                 _context.Add(inspectionRecord);
                 await _context.SaveChangesAsync();
+
+                // Gửi thông báo kết quả kiểm định cho chủ xe
+                try
+                {
+                    var vehicle = await _context.Vehicles
+                        .Include(v => v.Owner)
+                        .FirstOrDefaultAsync(v => v.VehicleId == inspectionRecord.VehicleId);
+                    
+                    if (vehicle != null && vehicle.Owner != null)
+                    {
+                        var vehicleInfo = $"{vehicle.PlateNumber} ({vehicle.Brand} {vehicle.Model})";
+                        await _notificationService.SendInspectionResultNotificationAsync(
+                            vehicle.OwnerId, 
+                            vehicleInfo, 
+                            inspectionRecord.Result ?? "Đang xử lý"
+                        );
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Log error nhưng không làm gián đoạn process
+                    Console.WriteLine($"Error sending notification: {ex.Message}");
+                }
+
                 return RedirectToAction(nameof(Index));
             }
             ViewData["InspectorId"] = new SelectList(_context.Users, "UserId", "UserId", inspectionRecord.InspectorId);

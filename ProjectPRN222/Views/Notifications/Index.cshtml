@@ -1,0 +1,296 @@
+@model IEnumerable<ProjectPRN222.Models.Notification>
+@{
+    ViewData["Title"] = "Thông báo";
+}
+
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-bell-fill"></i> Thông báo
+                        <span class="badge bg-danger ms-2" id="unreadCountBadge">@ViewBag.UnreadCount</span>
+                    </h4>
+                </div>
+                <div class="card-body p-0">
+                    <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+                        <div>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="markAllAsRead()">
+                                <i class="bi bi-check-all"></i> Đánh dấu tất cả đã đọc
+                            </button>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="refreshNotifications()">
+                                <i class="bi bi-arrow-clockwise"></i> Làm mới
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="notificationsList">
+                        @if (Model.Any())
+                        {
+                            @foreach (var notification in Model)
+                            {
+                                <div class="notification-item p-3 border-bottom @(notification.IsRead == true ? "read" : "unread")" 
+                                     data-id="@notification.NotificationId">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex align-items-center mb-2">
+                                                @if (notification.IsRead != true)
+                                                {
+                                                    <span class="badge bg-success me-2">Mới</span>
+                                                }
+                                                <small class="text-muted">@notification.SentDate?.ToString("dd/MM/yyyy HH:mm")</small>
+                                            </div>
+                                            <p class="mb-0 notification-message">@notification.Message</p>
+                                        </div>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                                                <i class="bi bi-three-dots-vertical"></i>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                @if (notification.IsRead != true)
+                                                {
+                                                    <li><a class="dropdown-item" href="#" onclick="markAsRead(@notification.NotificationId)">
+                                                        <i class="bi bi-check"></i> Đánh dấu đã đọc
+                                                    </a></li>
+                                                }
+                                                <li><a class="dropdown-item text-danger" href="#" onclick="deleteNotification(@notification.NotificationId)">
+                                                    <i class="bi bi-trash"></i> Xóa
+                                                </a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-center py-5">
+                                <i class="bi bi-bell-slash fs-1 text-muted"></i>
+                                <p class="text-muted mt-3">Chưa có thông báo nào</p>
+                            </div>
+                        }
+                    </div>
+                    
+                    <div class="text-center p-3">
+                        <button type="button" class="btn btn-outline-primary" onclick="loadMoreNotifications()">
+                            <i class="bi bi-arrow-down-circle"></i> Tải thêm
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container position-fixed top-0 end-0 p-3" id="toastContainer">
+    <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <i class="bi bi-bell-fill text-primary me-2"></i>
+            <strong class="me-auto" id="toastTitle">Thông báo</strong>
+            <small id="toastTime"></small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body" id="toastMessage">
+        </div>
+    </div>
+</div>
+
+<style>
+    .notification-item.unread {
+        background-color: #f8f9fa;
+        border-left: 4px solid #007bff;
+    }
+
+    .notification-item.read {
+        background-color: white;
+        border-left: 4px solid transparent;
+    }
+
+    .notification-item:hover {
+        background-color: #f5f5f5;
+    }
+
+    .notification-message {
+        font-size: 0.95rem;
+        line-height: 1.4;
+    }
+</style>
+
+<script>
+    let currentPage = 0;
+    let connection;
+
+    // Khởi tạo SignalR connection
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeSignalR();
+    });
+
+    function initializeSignalR() {
+        connection = new signalR.HubConnectionBuilder()
+            .withUrl("/notificationHub")
+            .build();
+
+        connection.start().then(function () {
+            console.log('SignalR Connected');
+        }).catch(function (err) {
+            console.error('SignalR Connection Error: ', err);
+        });
+
+        // Lắng nghe thông báo mới
+        connection.on("ReceiveNotification", function (notification) {
+            showNotificationToast(notification);
+            addNotificationToList(notification);
+            updateUnreadCount();
+        });
+    }
+
+    function showNotificationToast(notification) {
+        document.getElementById('toastTitle').textContent = notification.title || 'Thông báo';
+        document.getElementById('toastMessage').textContent = notification.message;
+        document.getElementById('toastTime').textContent = notification.sentDate;
+        
+        const toast = new bootstrap.Toast(document.getElementById('notificationToast'));
+        toast.show();
+    }
+
+    function addNotificationToList(notification) {
+        const notificationsList = document.getElementById('notificationsList');
+        const notificationItem = createNotificationElement(notification);
+        
+        // Thêm vào đầu danh sách
+        if (notificationsList.firstChild) {
+            notificationsList.insertBefore(notificationItem, notificationsList.firstChild);
+        } else {
+            notificationsList.appendChild(notificationItem);
+        }
+    }
+
+    function createNotificationElement(notification) {
+        const div = document.createElement('div');
+        div.className = 'notification-item p-3 border-bottom ' + (notification.isRead ? 'read' : 'unread');
+        div.setAttribute('data-id', notification.id);
+        
+        div.innerHTML = `
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                    <div class="d-flex align-items-center mb-2">
+                        ${!notification.isRead ? '<span class="badge bg-success me-2">Mới</span>' : ''}
+                        <small class="text-muted">${notification.sentDate}</small>
+                    </div>
+                    <p class="mb-0 notification-message">${notification.message}</p>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        ${!notification.isRead ? 
+                            `<li><a class="dropdown-item" href="#" onclick="markAsRead(${notification.id})">
+                                <i class="bi bi-check"></i> Đánh dấu đã đọc
+                            </a></li>` : ''}
+                        <li><a class="dropdown-item text-danger" href="#" onclick="deleteNotification(${notification.id})">
+                            <i class="bi bi-trash"></i> Xóa
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        `;
+        
+        return div;
+    }
+
+    function markAsRead(notificationId) {
+        fetch(`/Notifications/MarkAsRead`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `id=${notificationId}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const notificationItem = document.querySelector(`[data-id="${notificationId}"]`);
+                if (notificationItem) {
+                    notificationItem.classList.remove('unread');
+                    notificationItem.classList.add('read');
+                    const badge = notificationItem.querySelector('.badge');
+                    if (badge) badge.remove();
+                }
+                updateUnreadCount();
+            }
+        });
+    }
+
+    function markAllAsRead() {
+        fetch('/Notifications/MarkAllAsRead', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.querySelectorAll('.notification-item.unread').forEach(item => {
+                    item.classList.remove('unread');
+                    item.classList.add('read');
+                    const badge = item.querySelector('.badge');
+                    if (badge) badge.remove();
+                });
+                updateUnreadCount();
+            }
+        });
+    }
+
+    function deleteNotification(notificationId) {
+        if (confirm('Bạn có chắc muốn xóa thông báo này?')) {
+            fetch(`/Notifications/Delete/${notificationId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const notificationItem = document.querySelector(`[data-id="${notificationId}"]`);
+                    if (notificationItem) {
+                        notificationItem.remove();
+                    }
+                    updateUnreadCount();
+                }
+            });
+        }
+    }
+
+    function updateUnreadCount() {
+        fetch('/Notifications/GetUnreadCount')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('unreadCountBadge').textContent = data.count;
+                }
+            });
+    }
+
+    function refreshNotifications() {
+        location.reload();
+    }
+
+    function loadMoreNotifications() {
+        currentPage++;
+        fetch(`/Notifications/GetNotifications?skip=${currentPage * 20}&take=20`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const notificationsList = document.getElementById('notificationsList');
+                    data.data.forEach(notification => {
+                        const notificationItem = createNotificationElement(notification);
+                        notificationsList.appendChild(notificationItem);
+                    });
+                }
+            });
+    }
+</script>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" 
