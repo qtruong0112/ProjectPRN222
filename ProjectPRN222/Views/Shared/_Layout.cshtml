@@ -18,36 +18,54 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-info shadow rounded-bottom-4 py-2 mb-4 animate-navbar">
             <div class="container-fluid">
+                @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+                @{
+                    var fullName = HttpContextAccessor.HttpContext.Session.GetString("FullName");
+                    var roleId = HttpContextAccessor.HttpContext.Session.GetInt32("RoleId");
+                }
+
                 <a class="navbar-brand fw-bold text-white px-3" asp-area="" asp-controller="Home" asp-action="Index">
                     <i class="bi bi-car-front-fill"></i> ProjectPRN222
                 </a>
                 <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="mainNavbar">
                     <ul class="navbar-nav flex-grow-1 gap-1">
+                       
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-custom" asp-area="" asp-controller="InspectionAppointments" asp-action="Index"><i class="bi bi-car-front"></i>Quản lý lịch hẹn đăng kiểm  </a>
+                            </li>
                         
-                        <li class="nav-item">
-                            <a class="nav-link nav-link-custom" asp-area="" asp-controller="InspectionAppointments" asp-action="Index"><i class="bi bi-car-front"></i>Quản lý lịch hẹn đăng kiểm  </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link nav-link-custom" asp-area="" asp-controller="Vehicles" asp-action="Index"><i class="bi bi-car-front"></i> Quản lý xe</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link nav-link-custom" asp-area="" asp-controller="InspectionStations" asp-action="Index"><i class="bi bi-building"></i> Quản lý trạm đăng kiểm</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link nav-link-custom" asp-area="" asp-controller="InspectionRecords" asp-action="ForPolice"><i class="bi bi-shield-exclamation"></i> Tra cứu phương tiện vi phạm</a>
-                        </li>
+                        
+                        
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-custom" asp-area="" asp-controller="Vehicles" asp-action="Index"><i class="bi bi-car-front"></i> Quản lý xe</a>
+                            </li>
+                        
+
+                        
+                        
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-custom" asp-area="" asp-controller="InspectionStations" asp-action="Index">
+                                    <i class="bi bi-building"></i> Quản lý trạm đăng kiểm
+                                </a>
+                            </li>
+                        
+                        
+                        
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-custom" asp-area="" asp-controller="InspectionRecords" asp-action="ForPolice"><i class="bi bi-shield-exclamation"></i> Tra cứu phương tiện vi phạm</a>
+                            </li>
+                        
+                        
                         <li class="nav-item">
                             <a class="nav-link nav-link-custom" asp-area="" asp-controller="InspectionRecords" asp-action="ForOwnerVehicle"><i class="bi bi-search"></i> Tra cứu kết quả đăng kiểm</a>
                         </li>
                     </ul>
 
-                    @{
-                        var fullName = HttpContextAccessor.HttpContext.Session.GetString("FullName");
-                    }
+                   
 
                     <ul class="navbar-nav ms-lg-3">
                         @if (!string.IsNullOrEmpty(fullName))
@@ -85,6 +103,15 @@
             &copy; 2025 - ProjectPRN222 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
+    @functions {
+        bool IsAllowedForRoles(params int[] roles)
+        {
+            var roleId = HttpContextAccessor.HttpContext.Session.GetInt32("RoleId");
+            return roles.Contains(roleId ?? -1);
+        }
+    }
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
