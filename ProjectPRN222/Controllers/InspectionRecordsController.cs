@@ -10,6 +10,7 @@ using ProjectPRN222.Services;
 
 namespace ProjectPRN222.Controllers
 {
+    
     public class InspectionRecordsController : Controller
     {
         private readonly PrnprojectContext _context;
@@ -22,6 +23,7 @@ namespace ProjectPRN222.Controllers
         }
 
         // GET: InspectionRecords
+   
         public async Task<IActionResult> Index(
             int StationId = -1,
             string PlateNumber = null,
@@ -77,6 +79,8 @@ namespace ProjectPRN222.Controllers
         }
 
         // GET: InspectionRecords/ForPolice
+
+        [RoleAllow(4, 5)]
         public async Task<IActionResult> ForPolice(string plateNumber)
         {
             if (string.IsNullOrWhiteSpace(plateNumber))
@@ -162,6 +166,7 @@ namespace ProjectPRN222.Controllers
         }
 
         // GET: InspectionRecords/Details/5
+      
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -183,7 +188,7 @@ namespace ProjectPRN222.Controllers
             return View(inspectionRecord);
         }
 
-
+    
         public async Task<IActionResult> CreateFromAppointment(int appointmentId)
         {
             var appointment = await _context.InspectionAppointments
@@ -224,6 +229,7 @@ namespace ProjectPRN222.Controllers
 
 
         // GET: InspectionRecords/Create
+       
         public IActionResult Create()
         {
             ViewData["InspectorId"] = new SelectList(_context.Users.Where(u => u.RoleId == 2), "UserId", "FullName"); // Worker
@@ -244,6 +250,7 @@ namespace ProjectPRN222.Controllers
         // POST: InspectionRecords/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+ 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("RecordId,VehicleId,StationId,InspectorId,InspectionDate,Result,Co2emission,Hcemission,Comments")] InspectionRecord inspectionRecord)
@@ -283,7 +290,7 @@ namespace ProjectPRN222.Controllers
             ViewData["VehicleId"] = new SelectList(_context.Vehicles, "VehicleId", "VehicleId", inspectionRecord.VehicleId);
             return View(inspectionRecord);
         }
-
+   
         // GET: InspectionRecords/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -306,6 +313,7 @@ namespace ProjectPRN222.Controllers
         // POST: InspectionRecords/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("RecordId,VehicleId,StationId,InspectorId,InspectionDate,Result,Co2emission,Hcemission,Comments")] InspectionRecord inspectionRecord)
@@ -342,6 +350,7 @@ namespace ProjectPRN222.Controllers
         }
 
         // GET: InspectionRecords/Delete/5
+
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -363,6 +372,7 @@ namespace ProjectPRN222.Controllers
         }
 
         // POST: InspectionRecords/Delete/5
+      
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -376,7 +386,7 @@ namespace ProjectPRN222.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
+        
         private bool InspectionRecordExists(int id)
         {
             return _context.InspectionRecords.Any(e => e.RecordId == id);
