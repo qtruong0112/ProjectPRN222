@@ -102,9 +102,9 @@ namespace ProjectPRN222.Controllers
             {
                 return NotFound();
             }
-            ViewData["StationId"] = new SelectList(_context.InspectionStations, "StationId", "StationId", inspectionAppointment.StationId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId", inspectionAppointment.UserId);
-            ViewData["VehicleId"] = new SelectList(_context.Vehicles, "VehicleId", "VehicleId", inspectionAppointment.VehicleId);
+            ViewData["StationId"] = new SelectList(_context.InspectionStations, "StationId", "Name", inspectionAppointment.StationId);
+            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "FullName", inspectionAppointment.UserId);
+            ViewData["VehicleId"] = new SelectList(_context.Vehicles, "VehicleId", "PlateNumber", inspectionAppointment.VehicleId);
             return View(inspectionAppointment);
         }
 
@@ -140,9 +140,9 @@ namespace ProjectPRN222.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["StationId"] = new SelectList(_context.InspectionStations, "StationId", "StationId", inspectionAppointment.StationId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId", inspectionAppointment.UserId);
-            ViewData["VehicleId"] = new SelectList(_context.Vehicles, "VehicleId", "VehicleId", inspectionAppointment.VehicleId);
+            ViewData["StationId"] = new SelectList(_context.InspectionStations, "StationId", "Name", inspectionAppointment.StationId);
+            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "FullName", inspectionAppointment.UserId);
+            ViewData["VehicleId"] = new SelectList(_context.Vehicles, "VehicleId", "PlateNumber", inspectionAppointment.VehicleId);
             return View(inspectionAppointment);
         }
 

@@ -6,45 +6,37 @@
 }
 
 <style>
-    .gradient-btn {
-        background: linear-gradient(90deg, #36d1c4 0%, #5b86e5 100%);
-        color: #fff !important;
-        border: none;
-        box-shadow: 0 2px 8px rgba(91,134,229,0.15);
-        transition: box-shadow 0.2s;
-    }
-    .gradient-btn:hover {
-        box-shadow: 0 4px 16px rgba(91,134,229,0.25);
-        color: #fff !important;
-    }
-    .table-hover tbody tr:hover {
-        background-color: #e3f2fd;
-    }
     .custom-rounded-table {
         border-radius: 1rem !important;
         overflow: hidden;
     }
-    .custom-rounded-table thead tr:first-child th:first-child {
-        border-top-left-radius: 1rem;
-    }
-    .custom-rounded-table thead tr:first-child th:last-child {
-        border-top-right-radius: 1rem;
+
+        .custom-rounded-table thead tr:first-child th:first-child {
+            border-top-left-radius: 1rem;
+        }
+
+        .custom-rounded-table thead tr:first-child th:last-child {
+            border-top-right-radius: 1rem;
+        }
+
+    .table-hover tbody tr:hover {
+        background-color: #e3f2fd;
     }
 </style>
 
 <div class="container py-4">
-    <h2 class="mb-4 text-center text-primary fw-bold">
+    <h2 class="mb-4 text-center text-info fw-bold">
         <i class="bi bi-building"></i> Danh sách trạm đăng kiểm
     </h2>
 
     <div class="mb-3 text-end">
-        <a asp-action="Create" class="btn btn-success fw-bold">
+        <a asp-action="Create" class="btn btn-info fw-bold text-white">
             <i class="bi bi-plus-circle me-1"></i> Thêm trạm mới
         </a>
     </div>
     <div class="table-responsive">
         <table class="table table-bordered table-hover align-middle text-center rounded-4 overflow-hidden custom-rounded-table">
-            <thead class="bg-primary text-white">
+            <thead class="bg-info text-white">
                 <tr>
                     <th><i class="bi bi-geo-alt"></i> @Html.DisplayNameFor(model => model.Name)</th>
                     <th><i class="bi bi-geo"></i> @Html.DisplayNameFor(model => model.Address)</th>
@@ -54,18 +46,17 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model) {
+                @foreach (var item in Model)
+                {
                     <tr>
                         <td class="fw-semibold">@Html.DisplayFor(modelItem => item.Name)</td>
                         <td>@Html.DisplayFor(modelItem => item.Address)</td>
                         <td>
-                            <span class="badge bg-success"><i class="bi bi-telephone"></i> @Html.DisplayFor(modelItem => item.Phone)</span>
+                            @Html.DisplayFor(modelItem => item.Phone)
                         </td>
+                        <td>@item.Email</td>
                         <td>
-                            <span class="badge bg-info text-dark"><i class="bi bi-envelope"></i> @Html.DisplayFor(modelItem => item.Email)</span>
-                        </td>
-                        <td>
-                            <a asp-action="Edit" asp-route-id="@item.StationId" class="btn btn-sm btn-primary me-1">
+                            <a asp-action="Edit" asp-route-id="@item.StationId" class="btn btn-sm btn-info text-white me-1">
                                 <i class="bi bi-pencil-square"></i> Sửa
                             </a>
                             <a asp-action="Details" asp-route-id="@item.StationId" class="btn btn-sm btn-warning me-1 text-white">

@@ -21,11 +21,11 @@
                         <dt class="col-sm-4 text-end fw-semibold"><i class="bi bi-card-text"></i> @Html.DisplayNameFor(model => model.Note)</dt>
                         <dd class="col-sm-8">@Html.DisplayFor(model => model.Note)</dd>
                         <dt class="col-sm-4 text-end fw-semibold"><i class="bi bi-building"></i> @Html.DisplayNameFor(model => model.Station)</dt>
-                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Station.StationId)</dd>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Station.Name)</dd>
                         <dt class="col-sm-4 text-end fw-semibold"><i class="bi bi-person"></i> @Html.DisplayNameFor(model => model.User)</dt>
-                        <dd class="col-sm-8">@Html.DisplayFor(model => model.User.UserId)</dd>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.User.FullName)</dd>
                         <dt class="col-sm-4 text-end fw-semibold"><i class="bi bi-car-front"></i> @Html.DisplayNameFor(model => model.Vehicle)</dt>
-                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Vehicle.VehicleId)</dd>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Vehicle.PlateNumber)</dd>
                     </dl>
                 </div>
                 <div class="card-footer bg-white rounded-bottom-5 border-0 text-center">

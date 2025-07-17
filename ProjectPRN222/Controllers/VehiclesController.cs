@@ -47,7 +47,7 @@ namespace ProjectPRN222.Controllers
         // GET: Vehicles/Create
         public IActionResult Create()
         {
-            ViewData["OwnerId"] = new SelectList(_context.Users, "UserId", "UserId");
+            ViewData["OwnerId"] = new SelectList(_context.Users, "UserId", "FullName");
             return View();
         }
 
@@ -64,7 +64,7 @@ namespace ProjectPRN222.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["OwnerId"] = new SelectList(_context.Users, "UserId", "UserId", vehicle.OwnerId);
+            ViewData["OwnerId"] = new SelectList(_context.Users, "UserId", "FullName", vehicle.OwnerId);
             return View(vehicle);
         }
 
