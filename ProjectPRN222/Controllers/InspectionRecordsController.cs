@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ProjectPRN222.Models;
+using ProjectPRN222.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace ProjectPRN222.Controllers
 {
@@ -13,10 +15,46 @@ namespace ProjectPRN222.Controllers
     public class InspectionRecordsController : Controller
     {
         private readonly PrnprojectContext _context;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public InspectionRecordsController(PrnprojectContext context)
+        public InspectionRecordsController(PrnprojectContext context, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
+        }
+
+        // Tạo thông báo mới
+        private async Task<Notification> CreateNotificationAsync(int userId, string message, string title = "Thông báo")
+        {
+            var notification = new Notification
+            {
+                UserId = userId,
+                Message = message,
+                SentDate = DateTime.Now,
+                IsRead = false
+            };
+
+            _context.Notifications.Add(notification);
+            await _context.SaveChangesAsync();
+
+            // Gửi thông báo realtime qua SignalR
+            await _hubContext.Clients.Group($"User_{userId}").SendAsync("ReceiveNotification", new
+            {
+                id = notification.NotificationId,
+                message = notification.Message,
+                sentDate = notification.SentDate?.ToString("dd/MM/yyyy HH:mm") ?? "",
+                isRead = notification.IsRead,
+                title = title
+            });
+
+            return notification;
+        }
+
+        // Gửi thông báo khi có kết quả kiểm định mới
+        private async Task SendInspectionResultNotificationAsync(int vehicleOwnerId, string vehicleInfo, string result)
+        {
+            var message = $"Kết quả kiểm định cho xe {vehicleInfo}: {result}";
+            await CreateNotificationAsync(vehicleOwnerId, message, "Kết quả kiểm định");
         }
 
         // GET: InspectionRecords
@@ -256,6 +294,30 @@ namespace ProjectPRN222.Controllers
             {
                 _context.Add(inspectionRecord);
                 await _context.SaveChangesAsync();
+
+                // Gửi thông báo kết quả kiểm định cho chủ xe
+                try
+                {
+                    var vehicle = await _context.Vehicles
+                        .Include(v => v.Owner)
+                        .FirstOrDefaultAsync(v => v.VehicleId == inspectionRecord.VehicleId);
+                    
+                    if (vehicle != null && vehicle.Owner != null)
+                    {
+                        var vehicleInfo = $"{vehicle.PlateNumber} ({vehicle.Brand} {vehicle.Model})";
+                        await SendInspectionResultNotificationAsync(
+                            vehicle.OwnerId, 
+                            vehicleInfo, 
+                            inspectionRecord.Result ?? "Đang xử lý"
+                        );
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Log error nhưng không làm gián đoạn process
+                    Console.WriteLine($"Error sending notification: {ex.Message}");
+                }
+
                 return RedirectToAction(nameof(Index));
             }
             ViewData["InspectorId"] = new SelectList(_context.Users, "UserId", "UserId", inspectionRecord.InspectorId);
