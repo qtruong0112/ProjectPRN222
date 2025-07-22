@@ -29,6 +29,37 @@
         <i class="bi bi-building"></i> Danh sách trạm đăng kiểm
     </h2>
 
+    <!-- Filter Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">🔍 Tìm kiếm trạm đăng kiểm</h5>
+        </div>
+        <div class="card-body">
+            <form method="get">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Tên trạm</label>
+                        <input type="text" class="form-control" name="name" value="@ViewBag.Name" placeholder="Nhập tên trạm">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Địa chỉ</label>
+                        <input type="text" class="form-control" name="address" value="@ViewBag.Address" placeholder="Nhập địa chỉ">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="email" value="@ViewBag.Email" placeholder="email@example.com">
+                    </div>
+                    <div class="col-md-12">
+                        <div class="d-grid gap-2 d-md-block">
+                            <button type="submit" class="btn btn-primary">🔍 Tìm kiếm</button>
+                            <a href="@Url.Action("Index")" class="btn btn-secondary">🔄 Reset</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="mb-3 text-end">
         <a asp-action="Create" class="btn btn-info fw-bold text-white">
             <i class="bi bi-plus-circle me-1"></i> Thêm trạm mới

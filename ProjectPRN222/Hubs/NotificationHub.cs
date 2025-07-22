@@ -1,30 +1,12 @@
 using Microsoft.AspNetCore.SignalR;
-using ProjectPRN222.Models;
 
 namespace ProjectPRN222.Hubs
 {
     public class NotificationHub : Hub
     {
-        private readonly PrnprojectContext _context;
-
-        public NotificationHub(PrnprojectContext context)
-        {
-            _context = context;
-        }
-
-        public async Task JoinUserGroup(string userId)
-        {
-            await Groups.AddToGroupAsync(Context.ConnectionId, $"User_{userId}");
-        }
-
-        public async Task LeaveUserGroup(string userId)
-        {
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"User_{userId}");
-        }
-
+        // Kết nối user - đơn giản như SimpleChat
         public override async Task OnConnectedAsync()
         {
-            // Tự động join user vào group khi kết nối
             var userId = Context.GetHttpContext()?.Session.GetInt32("UserId");
             if (userId.HasValue && userId.Value > 0)
             {
@@ -33,6 +15,7 @@ namespace ProjectPRN222.Hubs
             await base.OnConnectedAsync();
         }
 
+        // Ngắt kết nối - đơn giản
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             var userId = Context.GetHttpContext()?.Session.GetInt32("UserId");
@@ -41,6 +24,16 @@ namespace ProjectPRN222.Hubs
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"User_{userId.Value}");
             }
             await base.OnDisconnectedAsync(exception);
+        }
+
+        // Gửi notification đến user - giống SendMessage trong SimpleChat
+        public async Task SendNotificationToUser(int targetUserId, string message)
+        {
+            await Clients.Group($"User_{targetUserId}").SendAsync("ReceiveNotification", new
+            {
+                message = message,
+                timestamp = DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+            });
         }
     }
 } 

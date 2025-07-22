@@ -20,15 +20,30 @@ namespace ProjectPRN222.Controllers
             _context = context;
         }
 
-        // GET: InspectionStations - Tất cả user có thể xem danh sách trạm kiểm định
-        [RoleAllow(1, 2, 3, 4, 5)]
-        public async Task<IActionResult> Index()
+        // GET: InspectionStations - Với filter  
+        public async Task<IActionResult> Index(string name = null, string address = null, string email = null)
         {
-            return View(await _context.InspectionStations.ToListAsync());
+            var query = _context.InspectionStations.AsQueryable();
+
+            // Apply filters - case insensitive
+            if (!string.IsNullOrWhiteSpace(name))
+                query = query.Where(s => s.Name.ToLower().Contains(name.Trim().ToLower()));
+            
+            if (!string.IsNullOrWhiteSpace(address))
+                query = query.Where(s => s.Address.ToLower().Contains(address.Trim().ToLower()));
+            
+            if (!string.IsNullOrWhiteSpace(email))
+                query = query.Where(s => s.Email.ToLower().Contains(email.Trim().ToLower()));
+
+            // ViewBag for retaining filter values
+            ViewBag.Name = name;
+            ViewBag.Address = address;
+            ViewBag.Email = email;
+
+            return View(await query.ToListAsync());
         }
 
         // GET: InspectionStations/Details/5 - Tất cả user có thể xem chi tiết trạm kiểm định
-        [RoleAllow(1, 2, 3, 4, 5)]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
