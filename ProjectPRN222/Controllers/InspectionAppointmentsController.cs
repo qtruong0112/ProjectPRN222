@@ -19,11 +19,25 @@ namespace ProjectPRN222.Controllers
             _context = context;
         }
 
+
         // GET: InspectionAppointments
         public async Task<IActionResult> Index()
         {
-            var prnprojectContext = _context.InspectionAppointments.Include(i => i.Station).Include(i => i.User).Include(i => i.Vehicle);
-            return View(await prnprojectContext.ToListAsync());
+            int? currentUserId = HttpContext.Session.GetInt32("UserId");
+
+            if (currentUserId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var appointments = await _context.InspectionAppointments
+                .Include(i => i.Station)
+                .Include(i => i.User)
+                .Include(i => i.Vehicle)
+                .Where(i => i.UserId == currentUserId)
+                .ToListAsync();
+
+            return View(appointments);
         }
 
         // GET: InspectionAppointments/Details/5
