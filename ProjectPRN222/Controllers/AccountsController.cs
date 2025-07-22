@@ -1,11 +1,12 @@
 ﻿    using Microsoft.AspNetCore.Mvc;
     using ProjectPRN222.Models;
+    using ProjectPRN222.HashPassword;
     using Microsoft.AspNetCore.Http;
     using Humanizer;
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.EntityFrameworkCore;
-    namespace ProjectPRN222.Controllers
-    {
+namespace ProjectPRN222.Controllers
+{
         public class AccountsController : Controller
         {
             private readonly PrnprojectContext _context;
@@ -31,7 +32,13 @@
                         return View(user);
                     }
 
-                    _context.Users.Add(user);
+                user.Password = PasswordHelper.HashPassword(user.Password);
+                if (user.RoleId == 0)
+                {
+                    user.RoleId = 1;
+                }
+
+                _context.Users.Add(user);
                     _context.SaveChanges();
                     return RedirectToAction("Login");
                 }

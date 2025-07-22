@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace ProjectPRN222.Controllers
 {
+    [RoleAllow(5)]
     public class RoleAllowAttribute : Attribute, IAuthorizationFilter
     {
         private readonly int[] _allowedRoles;

@@ -41,7 +41,7 @@ namespace ProjectPRN222
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Accounts}/{action=Login}/{id?}");
 
             // Map SignalR Hub
             app.MapHub<NotificationHub>("/notificationHub");

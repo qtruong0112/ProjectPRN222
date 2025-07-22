@@ -144,6 +144,7 @@ namespace ProjectPRN222.Controllers
             return View();
         }
 
+        [RoleAllow(1, 5, 3, 2)]
         public async Task<IActionResult> ForOwnerVehicle(string plateNumber)
         {
             if (string.IsNullOrWhiteSpace(plateNumber))
@@ -181,7 +182,9 @@ namespace ProjectPRN222.Controllers
         }
 
         // GET: InspectionRecords/Details/5
-      
+
+
+        [RoleAllow(5, 3, 2)]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -203,7 +206,8 @@ namespace ProjectPRN222.Controllers
             return View(inspectionRecord);
         }
 
-    
+
+        [RoleAllow(5, 3, 2)]
         public async Task<IActionResult> CreateFromAppointment(int appointmentId)
         {
             var appointment = await _context.InspectionAppointments
@@ -244,7 +248,8 @@ namespace ProjectPRN222.Controllers
 
 
         // GET: InspectionRecords/Create
-       
+
+        [RoleAllow(5, 3, 2)]
         public IActionResult Create()
         {
             ViewData["InspectorId"] = new SelectList(_context.Users.Where(u => u.RoleId == 2), "UserId", "FullName"); // Worker
@@ -268,6 +273,7 @@ namespace ProjectPRN222.Controllers
  
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RoleAllow(5, 3, 2)]
         public async Task<IActionResult> Create([Bind("RecordId,VehicleId,StationId,InspectorId,InspectionDate,Result,Co2emission,Hcemission,Comments")] InspectionRecord inspectionRecord)
         {
             if (ModelState.IsValid)
@@ -305,8 +311,9 @@ namespace ProjectPRN222.Controllers
             ViewData["VehicleId"] = new SelectList(_context.Vehicles, "VehicleId", "VehicleId", inspectionRecord.VehicleId);
             return View(inspectionRecord);
         }
-   
+
         // GET: InspectionRecords/Edit/5
+        [RoleAllow(5, 3, 2)]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -331,6 +338,7 @@ namespace ProjectPRN222.Controllers
        
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RoleAllow(5, 3, 2)]
         public async Task<IActionResult> Edit(int id, [Bind("RecordId,VehicleId,StationId,InspectorId,InspectionDate,Result,Co2emission,Hcemission,Comments")] InspectionRecord inspectionRecord)
         {
             if (id != inspectionRecord.RecordId)
@@ -365,7 +373,7 @@ namespace ProjectPRN222.Controllers
         }
 
         // GET: InspectionRecords/Delete/5
-
+        [RoleAllow(5, 3, 2)]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -390,6 +398,7 @@ namespace ProjectPRN222.Controllers
       
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [RoleAllow(5, 3, 2)]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var inspectionRecord = await _context.InspectionRecords.FindAsync(id);

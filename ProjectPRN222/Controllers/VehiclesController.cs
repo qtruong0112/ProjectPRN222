@@ -9,6 +9,7 @@ using ProjectPRN222.Models;
 
 namespace ProjectPRN222.Controllers
 {
+    [RoleAllow(5, 1, 3, 2)]
     public class VehiclesController : Controller
     {
         private readonly PrnprojectContext _context;
