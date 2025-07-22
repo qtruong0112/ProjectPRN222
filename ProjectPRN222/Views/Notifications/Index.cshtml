@@ -6,78 +6,25 @@
 <div class="container py-4">
     <div class="row">
         <div class="col-12">
-            <div class="card shadow">
+            <div class="card">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">
-                        <i class="bi bi-bell-fill"></i> Thông báo
-                        <span class="badge bg-danger ms-2" id="unreadCountBadge">@ViewBag.UnreadCount</span>
-                    </h4>
+                    <h4 class="mb-0">🔔 Thông báo</h4>
                 </div>
                 <div class="card-body p-0">
-                    <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
-                        <div>
-                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="markAllAsRead()">
-                                <i class="bi bi-check-all"></i> Đánh dấu tất cả đã đọc
-                            </button>
-                        </div>
-                        <div>
-                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="refreshNotifications()">
-                                <i class="bi bi-arrow-clockwise"></i> Làm mới
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div id="notificationsList">
-                        @if (Model.Any())
-                        {
-                            @foreach (var notification in Model)
-                            {
-                                <div class="notification-item p-3 border-bottom @(notification.IsRead == true ? "read" : "unread")" 
-                                     data-id="@notification.NotificationId">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div class="flex-grow-1">
-                                            <div class="d-flex align-items-center mb-2">
-                                                @if (notification.IsRead != true)
-                                                {
-                                                    <span class="badge bg-success me-2">Mới</span>
-                                                }
-                                                <small class="text-muted">@notification.SentDate?.ToString("dd/MM/yyyy HH:mm")</small>
-                                            </div>
-                                            <p class="mb-0 notification-message">@notification.Message</p>
-                                        </div>
-                                        <div class="dropdown">
-                                            <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
-                                                <i class="bi bi-three-dots-vertical"></i>
-                                            </button>
-                                            <ul class="dropdown-menu">
-                                                @if (notification.IsRead != true)
-                                                {
-                                                    <li><a class="dropdown-item" href="#" onclick="markAsRead(@notification.NotificationId)">
-                                                        <i class="bi bi-check"></i> Đánh dấu đã đọc
-                                                    </a></li>
-                                                }
-                                                <li><a class="dropdown-item text-danger" href="#" onclick="deleteNotification(@notification.NotificationId)">
-                                                    <i class="bi bi-trash"></i> Xóa
-                                                </a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        }
-                        else
-                        {
-                            <div class="text-center py-5">
-                                <i class="bi bi-bell-slash fs-1 text-muted"></i>
-                                <p class="text-muted mt-3">Chưa có thông báo nào</p>
-                            </div>
-                        }
-                    </div>
-                    
-                    <div class="text-center p-3">
-                        <button type="button" class="btn btn-outline-primary" onclick="loadMoreNotifications()">
-                            <i class="bi bi-arrow-down-circle"></i> Tải thêm
+                    <div class="p-3 border-bottom">
+                        <button class="btn btn-sm btn-primary me-2" onclick="MarkAllAsRead()">
+                            Đánh dấu tất cả đã đọc
                         </button>
+                        <button class="btn btn-sm btn-secondary" onclick="LoadNotifications()">
+                            Làm mới
+                        </button>
+                    </div>
+                    
+                    <!-- Danh sách notifications -->
+                    <div id="notificationsList">
+                        <div class="text-center py-5">
+                            <p class="text-muted">Đang tải thông báo...</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -85,40 +32,6 @@
     </div>
 </div>
 
-<!-- Toast Container -->
-<div class="toast-container position-fixed top-0 end-0 p-3" id="toastContainer">
-    <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header">
-            <i class="bi bi-bell-fill text-primary me-2"></i>
-            <strong class="me-auto" id="toastTitle">Thông báo</strong>
-            <small id="toastTime"></small>
-            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
-        </div>
-        <div class="toast-body" id="toastMessage">
-        </div>
-    </div>
-</div>
-
-<style>
-    .notification-item.unread {
-        background-color: #f8f9fa;
-        border-left: 4px solid #007bff;
-    }
-
-    .notification-item.read {
-        background-color: white;
-        border-left: 4px solid transparent;
-    }
-
-    .notification-item:hover {
-        background-color: #f5f5f5;
-    }
-
-    .notification-message {
-        font-size: 0.95rem;
-        line-height: 1.4;
-    }
-</style>
-
-<!-- Bootstrap Icons -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"> 
+@section Scripts {
+    <script src="~/js/notifications.js"></script>
+} 

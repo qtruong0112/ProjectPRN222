@@ -23,38 +23,18 @@ namespace ProjectPRN222.Controllers
             _hubContext = hubContext;
         }
 
-        // Tạo thông báo mới
-        private async Task<Notification> CreateNotificationAsync(int userId, string message, string title = "Thông báo")
+        // Tạo thông báo đơn giản - sử dụng NotificationsController
+        private async Task CreateNotificationAsync(int userId, string message)
         {
-            var notification = new Notification
-            {
-                UserId = userId,
-                Message = message,
-                SentDate = DateTime.Now,
-                IsRead = false
-            };
-
-            _context.Notifications.Add(notification);
-            await _context.SaveChangesAsync();
-
-            // Gửi thông báo realtime qua SignalR
-            await _hubContext.Clients.Group($"User_{userId}").SendAsync("ReceiveNotification", new
-            {
-                id = notification.NotificationId,
-                message = notification.Message,
-                sentDate = notification.SentDate?.ToString("dd/MM/yyyy HH:mm") ?? "",
-                isRead = notification.IsRead,
-                title = title
-            });
-
-            return notification;
+            var notificationController = new NotificationsController(_context, _hubContext);
+            await notificationController.CreateNotification(userId, message);
         }
 
         // Gửi thông báo khi có kết quả kiểm định mới
         private async Task SendInspectionResultNotificationAsync(int vehicleOwnerId, string vehicleInfo, string result)
         {
             var message = $"Kết quả kiểm định cho xe {vehicleInfo}: {result}";
-            await CreateNotificationAsync(vehicleOwnerId, message, "Kết quả kiểm định");
+            await CreateNotificationAsync(vehicleOwnerId, message);
         }
 
         // GET: InspectionRecords

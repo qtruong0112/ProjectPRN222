@@ -18,9 +18,8 @@ namespace ProjectPRN222.Controllers
             _context = context;
         }
 
-        // GET: Vehicles - Tất cả user có thể xem danh sách xe
-        [RoleAllow(1, 2, 3, 4, 5)]
-        public async Task<IActionResult> Index()
+        // GET: Vehicles - Với filter
+        public async Task<IActionResult> Index(string plateNumber = null, string brand = null, int? manufactureYear = null, string ownerName = null)
         {
             var currentUserId = HttpContext.Session.GetInt32("UserId");
             var currentRoleId = HttpContext.Session.GetInt32("RoleId");
@@ -32,13 +31,31 @@ namespace ProjectPRN222.Controllers
             {
                 query = query.Where(v => v.OwnerId == currentUserId.Value);
             }
+
+            // Apply filters - case insensitive
+            if (!string.IsNullOrWhiteSpace(plateNumber))
+                query = query.Where(v => v.PlateNumber.ToLower().Contains(plateNumber.Trim().ToLower()));
+            
+            if (!string.IsNullOrWhiteSpace(brand))
+                query = query.Where(v => v.Brand.ToLower().Contains(brand.Trim().ToLower()));
+            
+            if (manufactureYear.HasValue)
+                query = query.Where(v => v.ManufactureYear == manufactureYear);
+            
+            if (!string.IsNullOrWhiteSpace(ownerName))
+                query = query.Where(v => v.Owner.FullName.ToLower().Contains(ownerName.Trim().ToLower()));
+
+            // ViewBag for retaining filter values
+            ViewBag.PlateNumber = plateNumber;
+            ViewBag.Brand = brand;
+            ViewBag.ManufactureYear = manufactureYear;
+            ViewBag.OwnerName = ownerName;
             
             var vehicles = await query.ToListAsync();
             return View(vehicles);
         }
 
         // GET: Vehicles/Details/5 - Tất cả user có thể xem chi tiết xe
-        [RoleAllow(1, 2, 3, 4, 5)]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)

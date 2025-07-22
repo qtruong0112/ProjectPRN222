@@ -8,9 +8,13 @@
 
   <ItemGroup>
     <Compile Remove="Views\InspectorStations\**" />
+    <Compile Remove="Views\Loggings\**" />
     <Content Remove="Views\InspectorStations\**" />
+    <Content Remove="Views\Loggings\**" />
     <EmbeddedResource Remove="Views\InspectorStations\**" />
+    <EmbeddedResource Remove="Views\Loggings\**" />
     <None Remove="Views\InspectorStations\**" />
+    <None Remove="Views\Loggings\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,7 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\Loggings\" />
     <Folder Include="Views\Notifications\" />
   </ItemGroup>
 
