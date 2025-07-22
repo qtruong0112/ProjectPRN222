@@ -10,7 +10,7 @@
                         <span class="fs-5 fw-semibold">Kết quả kiểm định</span>
                     </div>
                     <a asp-action="Create" class="btn btn-success rounded-pill px-4">
-                        <i class="bi bi-plus-circle me-1"></i> Create New
+                        <i class="bi bi-plus-circle me-1"></i> Tạo kết quả đăng kiểm
                     </a>
                 </div>
                 <div class="card-body">
@@ -47,10 +47,10 @@
                                     <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Co2emission)</th>
                                     <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Hcemission)</th>
                                     <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Comments)</th>
-                                    <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Inspector)</th>
-                                    <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Station)</th>
-                                    <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Vehicle)</th>
-                                    <th class="text-end">Actions</th>
+                                    <th>@Html.DisplayNameFor(model => model.FirstOrDefault().InspectorId)</th>
+                                    <th>@Html.DisplayNameFor(model => model.FirstOrDefault().StationId)</th>
+                                    <th>@Html.DisplayNameFor(model => model.FirstOrDefault().VehicleId)</th>
+                                    <th class="text-end">Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>

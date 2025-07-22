@@ -339,9 +339,9 @@ namespace ProjectPRN222.Controllers
             {
                 return NotFound();
             }
-            ViewData["InspectorId"] = new SelectList(_context.Users, "UserId", "UserId", inspectionRecord.InspectorId);
-            ViewData["StationId"] = new SelectList(_context.InspectionStations, "StationId", "StationId", inspectionRecord.StationId);
-            ViewData["VehicleId"] = new SelectList(_context.Vehicles, "VehicleId", "VehicleId", inspectionRecord.VehicleId);
+            ViewData["InspectorId"] = new SelectList(_context.Users, "UserId", "FullName", inspectionRecord.InspectorId);
+            ViewData["StationId"] = new SelectList(_context.InspectionStations, "StationId", "Name", inspectionRecord.StationId);
+            ViewData["VehicleId"] = new SelectList(_context.Vehicles, "VehicleId", "PlateNumber", inspectionRecord.VehicleId);
             return View(inspectionRecord);
         }
 
