@@ -42,7 +42,6 @@ public partial class PrnprojectContext : DbContext
 
             entity.Property(e => e.AppointmentId).HasColumnName("AppointmentID");
             entity.Property(e => e.AppointmentDate).HasColumnType("datetime");
-            entity.Property(e => e.Note).HasColumnType("text");
             entity.Property(e => e.StationId).HasColumnName("StationID");
             entity.Property(e => e.Status)
                 .HasMaxLength(20)
@@ -75,7 +74,6 @@ public partial class PrnprojectContext : DbContext
             entity.Property(e => e.Co2emission)
                 .HasColumnType("decimal(5, 2)")
                 .HasColumnName("CO2Emission");
-            entity.Property(e => e.Comments).HasColumnType("text");
             entity.Property(e => e.Hcemission)
                 .HasColumnType("decimal(5, 2)")
                 .HasColumnName("HCEmission");
@@ -112,13 +110,10 @@ public partial class PrnprojectContext : DbContext
             entity.HasIndex(e => e.Email, "UQ__Inspecti__A9D105346121600F").IsUnique();
 
             entity.Property(e => e.StationId).HasColumnName("StationID");
-            entity.Property(e => e.Address).HasColumnType("text");
             entity.Property(e => e.Email)
                 .HasMaxLength(100)
                 .IsUnicode(false);
-            entity.Property(e => e.Name)
-                .HasMaxLength(100)
-                .IsUnicode(false);
+            entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.Phone)
                 .HasMaxLength(15)
                 .IsUnicode(false);
@@ -180,20 +175,19 @@ public partial class PrnprojectContext : DbContext
             entity.HasIndex(e => e.Email, "UQ__Users__A9D1053432B1CC2D").IsUnique();
 
             entity.Property(e => e.UserId).HasColumnName("UserID");
-            entity.Property(e => e.Address).HasColumnType("text");
             entity.Property(e => e.Email)
                 .HasMaxLength(100)
                 .IsUnicode(false);
-            entity.Property(e => e.FullName)
-                .HasMaxLength(100)
-                .IsUnicode(false);
+            entity.Property(e => e.FullName).HasMaxLength(100);
             entity.Property(e => e.Password)
                 .HasMaxLength(255)
                 .IsUnicode(false);
             entity.Property(e => e.Phone)
                 .HasMaxLength(15)
                 .IsUnicode(false);
+            entity.Property(e => e.ResetPasswordToken).HasMaxLength(255);
             entity.Property(e => e.RoleId).HasColumnName("RoleID");
+            entity.Property(e => e.TokenExpiry).HasColumnType("datetime");
 
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)

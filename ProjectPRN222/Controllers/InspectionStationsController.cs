@@ -10,7 +10,8 @@ using ProjectPRN222.Models;
 
 namespace ProjectPRN222.Controllers
 {
- 
+
+    [RoleAllow(5, 3)]
     public class InspectionStationsController : Controller
     {
         private readonly PrnprojectContext _context;

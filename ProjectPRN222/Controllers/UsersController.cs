@@ -9,6 +9,7 @@ using ProjectPRN222.Models;
 
 namespace ProjectPRN222.Controllers
 {
+    [RoleAllow(5)]
     public class UsersController : Controller
     {
         private readonly PrnprojectContext _context;
@@ -45,6 +46,7 @@ namespace ProjectPRN222.Controllers
         }
 
         // GET: Users/Create
+        
         public IActionResult Create()
         {
             ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleId");
@@ -67,7 +69,7 @@ namespace ProjectPRN222.Controllers
             ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleId", user.RoleId);
             return View(user);
         }
-
+        [RoleAllow(5, 1)]
         // GET: Users/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -90,6 +92,7 @@ namespace ProjectPRN222.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RoleAllow(5, 1)]
         public async Task<IActionResult> Edit(int id, [Bind("UserId,FullName,Email,Password,Phone,Address,RoleId")] User user)
         {
             if (id != user.UserId)
