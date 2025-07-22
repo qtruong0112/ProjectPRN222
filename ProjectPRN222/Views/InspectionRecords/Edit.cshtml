@@ -1,7 +1,7 @@
 ﻿@model ProjectPRN222.Models.InspectionRecord
 
 @{
-    ViewData["Title"] = "Edit Inspection Record";
+    ViewData["Title"] = "Chỉnh sửa kết quả đăng kiểm";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -11,7 +11,7 @@
             <div class="card shadow rounded-4">
                 <div class="card-header bg-primary text-white rounded-top-4 d-flex align-items-center">
                     <i class="bi bi-pencil-square me-2"></i>
-                    <span class="fs-5 fw-semibold">Edit Inspection Record</span>
+                    <span class="fs-5 fw-semibold">Chỉnh sửa kết quả đăng kiểm</span>
                 </div>
                 <div class="card-body">
                     <form asp-action="Edit">
@@ -59,10 +59,10 @@
                         </div>
                         <div class="d-flex justify-content-end gap-2">
                             <button type="submit" class="btn btn-primary rounded-pill px-4">
-                                <i class="bi bi-save me-1"></i> Save
+                                <i class="bi bi-save me-1"></i> Lưu
                             </button>
                             <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
-                                <i class="bi bi-arrow-left me-1"></i> Back to List
+                                <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
                             </a>
                         </div>
                     </form>
