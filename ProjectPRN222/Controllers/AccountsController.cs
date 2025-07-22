@@ -33,11 +33,9 @@ namespace ProjectPRN222.Controllers
                     }
 
                 user.Password = PasswordHelper.HashPassword(user.Password);
-                if (user.RoleId == 0)
-                {
-                    user.RoleId = 1;
-                }
-
+                
+                user.RoleId = 1;
+                
                 _context.Users.Add(user);
                     _context.SaveChanges();
                     return RedirectToAction("Login");
@@ -51,24 +49,43 @@ namespace ProjectPRN222.Controllers
                 return View();
             }
 
-            [HttpPost]
-            public ActionResult Login(string email, string password)
+        [HttpPost]
+        public ActionResult Login(string email, string password)
+        {
+            var user = _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefault(u => u.Email == email);
+
+            if (user != null)
             {
-                var user = _context.Users
-                .Include(u => u.Role) // Include Role to access RoleId
-                .FirstOrDefault(u => u.Email == email && u.Password == password);
-                if (user != null)
+                bool isPasswordValid;
+
+                // Kiểm tra xem mật khẩu trong DB có phải là hash hay không (đơn giản là kiểm tra bắt đầu bằng "$2")
+                if (user.Password.StartsWith("$2")) // dấu hiệu của mật khẩu được hash bằng BCrypt
                 {
-                    HttpContext.Session.SetInt32("UserId", user.UserId); 
+                    isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user.Password);
+                }
+                else
+                {
+                    isPasswordValid = (password == user.Password);
+                }
+
+                if (isPasswordValid)
+                {
+                    HttpContext.Session.SetInt32("UserId", user.UserId);
                     HttpContext.Session.SetString("FullName", user.FullName);
                     HttpContext.Session.SetInt32("RoleId", user.Role.RoleId);
+
                     return RedirectToAction("Index", "Home");
                 }
-                ViewBag.Error = "Email hoặc mật khẩu không đúng.";
-                return View();
             }
 
-            public ActionResult Logout()
+            ViewBag.Error = "Email hoặc mật khẩu không đúng.";
+            return View();
+        }
+
+
+        public ActionResult Logout()
             {
                 HttpContext.Session.Clear();
                 return RedirectToAction("Login");
