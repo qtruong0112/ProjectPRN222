@@ -63,14 +63,14 @@ namespace ProjectPRN222.Controllers
         }
 
         // GET: InspectionStations/Create - Chỉ Admin có thể tạo trạm kiểm định mới
-        [RoleAllow(5)]
+        [RoleAllow(3, 5)]
         public IActionResult Create()
         {
             return View();
         }
 
         // POST: InspectionStations/Create - Chỉ Admin có thể tạo trạm kiểm định mới
-        [RoleAllow(5)]
+        [RoleAllow(5, 3)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("StationId,Name,Address,Phone,Email")] InspectionStation inspectionStation)
@@ -136,7 +136,7 @@ namespace ProjectPRN222.Controllers
         }
 
         // GET: InspectionStations/Delete/5 - Chỉ Admin có thể xóa trạm kiểm định
-        [RoleAllow(5)]
+        [RoleAllow(3, 5)]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -155,7 +155,7 @@ namespace ProjectPRN222.Controllers
         }
 
         // POST: InspectionStations/Delete/5 - Chỉ Admin có thể xóa trạm kiểm định
-        [RoleAllow(5)]
+        [RoleAllow(3, 5)]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -182,5 +182,7 @@ namespace ProjectPRN222.Controllers
         {
             return _context.InspectionStations.Any(e => e.StationId == id);
         }
+
+        
     }
 }
