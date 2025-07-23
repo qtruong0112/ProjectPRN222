@@ -121,6 +121,17 @@ namespace ProjectPRN222.Controllers
                 ModelState.AddModelError("OwnerId", "Bạn chỉ có thể tạo xe cho chính mình.");
             }
             
+            // Kiểm tra duplicate plate number
+            if (!string.IsNullOrWhiteSpace(vehicle.PlateNumber))
+            {
+                var existingVehicle = await _context.Vehicles
+                    .FirstOrDefaultAsync(v => v.PlateNumber.ToLower() == vehicle.PlateNumber.ToLower());
+                if (existingVehicle != null)
+                {
+                    ModelState.AddModelError("PlateNumber", "Biển số xe này đã tồn tại trong hệ thống.");
+                }
+            }
+            
             if (ModelState.IsValid)
             {
                 _context.Add(vehicle);
