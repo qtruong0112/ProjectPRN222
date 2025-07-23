@@ -16,6 +16,9 @@
                     <form asp-action="Edit" class="rounded-5">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
                         <input type="hidden" asp-for="UserId" />
+                        <input type="hidden" asp-for="Password" />
+                        <input type="hidden" asp-for="RoleId" />
+                        
                         <div class="mb-3">
                             <label asp-for="FullName" class="form-label fw-semibold"></label>
                             <input asp-for="FullName" class="form-control rounded-3" placeholder="Họ và tên" />
@@ -27,18 +30,13 @@
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
                         <div class="mb-3">
-                            <label asp-for="Password" class="form-label fw-semibold"></label>
-                            <input asp-for="Password" class="form-control rounded-3" placeholder="Mật khẩu" />
-                            <span asp-validation-for="Password" class="text-danger"></span>
-                        </div>
-                        <div class="mb-3">
                             <label asp-for="Phone" class="form-label fw-semibold"></label>
                             <input asp-for="Phone" class="form-control rounded-3" placeholder="Số điện thoại" />
                             <span asp-validation-for="Phone" class="text-danger"></span>
                         </div>
                         <div class="mb-3">
                             <label asp-for="Address" class="form-label fw-semibold"></label>
-                            <input asp-for="Address" class="form-control rounded-3" placeholder="Địa chỉ" />
+                            <textarea asp-for="Address" class="form-control rounded-3" placeholder="Địa chỉ" rows="3"></textarea>
                             <span asp-validation-for="Address" class="text-danger"></span>
                         </div>
                         <div class="d-grid gap-2 mb-2">

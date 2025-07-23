@@ -24,9 +24,9 @@ namespace ProjectPRN222.Controllers
         {
             var currentUserId = HttpContext.Session.GetInt32("UserId");
             var currentRoleId = HttpContext.Session.GetInt32("RoleId");
-            
+
             var query = _context.Vehicles.Include(v => v.Owner).AsQueryable();
-            
+
             // Nếu là chủ xe, chỉ hiển thị xe của mình
             if (currentRoleId == 1 && currentUserId.HasValue)
             {
@@ -36,13 +36,13 @@ namespace ProjectPRN222.Controllers
             // Apply filters - case insensitive
             if (!string.IsNullOrWhiteSpace(plateNumber))
                 query = query.Where(v => v.PlateNumber.ToLower().Contains(plateNumber.Trim().ToLower()));
-            
+
             if (!string.IsNullOrWhiteSpace(brand))
                 query = query.Where(v => v.Brand.ToLower().Contains(brand.Trim().ToLower()));
-            
+
             if (manufactureYear.HasValue)
                 query = query.Where(v => v.ManufactureYear == manufactureYear);
-            
+
             if (!string.IsNullOrWhiteSpace(ownerName))
                 query = query.Where(v => v.Owner.FullName.ToLower().Contains(ownerName.Trim().ToLower()));
 
@@ -51,7 +51,7 @@ namespace ProjectPRN222.Controllers
             ViewBag.Brand = brand;
             ViewBag.ManufactureYear = manufactureYear;
             ViewBag.OwnerName = ownerName;
-            
+
             var vehicles = await query.ToListAsync();
             return View(vehicles);
         }
@@ -67,7 +67,7 @@ namespace ProjectPRN222.Controllers
             var vehicle = await _context.Vehicles
                 .Include(v => v.Owner)
                 .FirstOrDefaultAsync(m => m.VehicleId == id);
-                
+
             if (vehicle == null)
             {
                 return NotFound();
@@ -75,7 +75,7 @@ namespace ProjectPRN222.Controllers
 
             var currentUserId = HttpContext.Session.GetInt32("UserId");
             var currentRoleId = HttpContext.Session.GetInt32("RoleId");
-            
+
             // Nếu là chủ xe, chỉ có thể xem xe của mình
             if (currentRoleId == 1 && currentUserId.HasValue && vehicle.OwnerId != currentUserId.Value)
             {
@@ -90,7 +90,7 @@ namespace ProjectPRN222.Controllers
         public IActionResult Create()
         {
             var currentRoleId = HttpContext.Session.GetInt32("RoleId");
-            
+
             if (currentRoleId == 1)
             {
                 // Chủ xe chỉ có thể tạo xe cho mình
@@ -102,7 +102,7 @@ namespace ProjectPRN222.Controllers
                 // Admin có thể tạo xe cho bất kỳ ai
                 ViewData["OwnerId"] = new SelectList(_context.Users, "UserId", "FullName");
             }
-            
+
             return View();
         }
 
@@ -114,13 +114,13 @@ namespace ProjectPRN222.Controllers
         {
             var currentUserId = HttpContext.Session.GetInt32("UserId");
             var currentRoleId = HttpContext.Session.GetInt32("RoleId");
-            
+
             // Nếu là chủ xe, chỉ có thể tạo xe cho mình
             if (currentRoleId == 1 && currentUserId.HasValue && vehicle.OwnerId != currentUserId.Value)
             {
                 ModelState.AddModelError("OwnerId", "Bạn chỉ có thể tạo xe cho chính mình.");
             }
-            
+
             // Kiểm tra duplicate plate number
             if (!string.IsNullOrWhiteSpace(vehicle.PlateNumber))
             {
@@ -131,14 +131,14 @@ namespace ProjectPRN222.Controllers
                     ModelState.AddModelError("PlateNumber", "Biển số xe này đã tồn tại trong hệ thống.");
                 }
             }
-            
+
             if (ModelState.IsValid)
             {
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            
+
             // Reload ViewData dựa trên role
             if (currentRoleId == 1)
             {
@@ -148,7 +148,7 @@ namespace ProjectPRN222.Controllers
             {
                 ViewData["OwnerId"] = new SelectList(_context.Users, "UserId", "FullName", vehicle.OwnerId);
             }
-            
+
             return View(vehicle);
         }
 
@@ -166,16 +166,16 @@ namespace ProjectPRN222.Controllers
             {
                 return NotFound();
             }
-            
+
             var currentUserId = HttpContext.Session.GetInt32("UserId");
             var currentRoleId = HttpContext.Session.GetInt32("RoleId");
-            
+
             // Nếu là chủ xe, chỉ có thể edit xe của mình
             if (currentRoleId == 1 && currentUserId.HasValue && vehicle.OwnerId != currentUserId.Value)
             {
                 return RedirectToAction("AccessDenied", "Home");
             }
-            
+
             if (currentRoleId == 1)
             {
                 // Chủ xe không thể thay đổi owner
@@ -186,7 +186,7 @@ namespace ProjectPRN222.Controllers
                 // Admin có thể thay đổi owner
                 ViewData["OwnerId"] = new SelectList(_context.Users, "UserId", "FullName", vehicle.OwnerId);
             }
-            
+
             return View(vehicle);
         }
 
@@ -203,14 +203,14 @@ namespace ProjectPRN222.Controllers
 
             var currentUserId = HttpContext.Session.GetInt32("UserId");
             var currentRoleId = HttpContext.Session.GetInt32("RoleId");
-            
+
             // Lấy thông tin xe gốc để kiểm tra ownership
             var originalVehicle = await _context.Vehicles.AsNoTracking().FirstOrDefaultAsync(v => v.VehicleId == id);
             if (originalVehicle == null)
             {
                 return NotFound();
             }
-            
+
             // Nếu là chủ xe, chỉ có thể edit xe của mình và không thể thay đổi owner
             if (currentRoleId == 1 && currentUserId.HasValue)
             {
@@ -218,7 +218,7 @@ namespace ProjectPRN222.Controllers
                 {
                     return RedirectToAction("AccessDenied", "Home");
                 }
-                
+
                 if (vehicle.OwnerId != currentUserId.Value)
                 {
                     ModelState.AddModelError("OwnerId", "Bạn không thể thay đổi chủ sở hữu xe.");
@@ -245,7 +245,7 @@ namespace ProjectPRN222.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            
+
             // Reload ViewData dựa trên role
             if (currentRoleId == 1)
             {
@@ -255,7 +255,7 @@ namespace ProjectPRN222.Controllers
             {
                 ViewData["OwnerId"] = new SelectList(_context.Users, "UserId", "FullName", vehicle.OwnerId);
             }
-            
+
             return View(vehicle);
         }
 
@@ -271,7 +271,7 @@ namespace ProjectPRN222.Controllers
             var vehicle = await _context.Vehicles
                 .Include(v => v.Owner)
                 .FirstOrDefaultAsync(m => m.VehicleId == id);
-                
+
             if (vehicle == null)
             {
                 return NotFound();
@@ -279,7 +279,7 @@ namespace ProjectPRN222.Controllers
 
             var currentUserId = HttpContext.Session.GetInt32("UserId");
             var currentRoleId = HttpContext.Session.GetInt32("RoleId");
-            
+
             // Nếu là chủ xe, chỉ có thể delete xe của mình
             if (currentRoleId == 1 && currentUserId.HasValue && vehicle.OwnerId != currentUserId.Value)
             {
@@ -303,7 +303,7 @@ namespace ProjectPRN222.Controllers
 
             var currentUserId = HttpContext.Session.GetInt32("UserId");
             var currentRoleId = HttpContext.Session.GetInt32("RoleId");
-            
+
             // Nếu là chủ xe, chỉ có thể delete xe của mình
             if (currentRoleId == 1 && currentUserId.HasValue && vehicle.OwnerId != currentUserId.Value)
             {
