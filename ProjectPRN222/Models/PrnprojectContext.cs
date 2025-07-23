@@ -187,6 +187,7 @@ public partial class PrnprojectContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.ResetPasswordToken).HasMaxLength(255);
             entity.Property(e => e.RoleId).HasColumnName("RoleID");
+            entity.Property(e => e.StationId).HasColumnName("StationID");
             entity.Property(e => e.TokenExpiry).HasColumnType("datetime");
 
             entity.HasOne(d => d.Role).WithMany(p => p.Users)

@@ -38,6 +38,7 @@ namespace ProjectPRN222.Controllers
         }
 
         // GET: InspectionRecords
+        
    
         public async Task<IActionResult> Index(
             int StationId = -1,
@@ -46,12 +47,17 @@ namespace ProjectPRN222.Controllers
             DateTime? FromDate = null,
             DateTime? ToDate = null)
         {
+            int? currentUserId = HttpContext.Session.GetInt32("UserId");
+            var currentUser = await _context.Users.FindAsync(currentUserId);
+
             var query = _context.InspectionRecords
                 .Include(i => i.Inspector)
                 .Include(i => i.Station)
                 .Include(i => i.Vehicle)
                     .ThenInclude(v => v.Owner)
                 .AsQueryable();
+
+            
 
             if (StationId > 0)
             {
@@ -77,6 +83,8 @@ namespace ProjectPRN222.Controllers
             {
                 query = query.Where(i => i.InspectionDate <= ToDate.Value);
             }
+
+            
 
             ViewBag.StationId = new SelectList(_context.InspectionStations.ToList(), "StationId", "Name", StationId);
             ViewBag.PlateNumber = PlateNumber;
