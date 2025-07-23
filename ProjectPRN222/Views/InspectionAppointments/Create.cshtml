@@ -1,10 +1,8 @@
 ﻿@model ProjectPRN222.Models.InspectionAppointment
-
 @{
     ViewData["Title"] = "Tạo lịch hẹn đăng kiểm";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 <div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-md-7 col-lg-6">
@@ -15,33 +13,39 @@
                 <div class="card-body p-4">
                     <form asp-action="Create" class="rounded-5">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <!-- Hidden fields for UserId and Status -->
+                        <input asp-for="UserId" type="hidden" />
+                        <input asp-for="Status" type="hidden" />
+
                         <div class="mb-3">
-                            <label asp-for="VehicleId" class="form-label fw-semibold"></label>
-                            <select asp-for="VehicleId" class="form-control rounded-5" asp-items="ViewBag.VehicleId"></select>
+                            <label asp-for="VehicleId" class="form-label fw-semibold">Xe cần đăng kiểm</label>
+                            <select asp-for="VehicleId" class="form-control rounded-5" asp-items="ViewBag.VehicleId">
+                                <option value="">-- Chọn xe --</option>
+                            </select>
+                            <span asp-validation-for="VehicleId" class="text-danger rounded-3 d-inline-block px-2"></span>
                         </div>
+
                         <div class="mb-3">
-                            <label asp-for="Status" class="form-label fw-semibold"></label>
-                            <input asp-for="Status" class="form-control rounded-5" />
-                            <span asp-validation-for="Status" class="text-danger rounded-3 d-inline-block px-2"></span>
+                            <label asp-for="StationId" class="form-label fw-semibold">Trạm đăng kiểm</label>
+                            <select asp-for="StationId" class="form-control rounded-5" asp-items="ViewBag.StationId">
+                                <option value="">-- Chọn trạm đăng kiểm --</option>
+                            </select>
+                            <span asp-validation-for="StationId" class="text-danger rounded-3 d-inline-block px-2"></span>
                         </div>
+
                         <div class="mb-3">
-                            <label asp-for="UserId" class="form-label fw-semibold"></label>
-                            <select asp-for="UserId" class="form-control rounded-5" asp-items="ViewBag.UserId"></select>
-                        </div>
-                        <div class="mb-3">
-                            <label asp-for="StationId" class="form-label fw-semibold"></label>
-                            <select asp-for="StationId" class="form-control rounded-5" asp-items="ViewBag.StationId"></select>
-                        </div>
-                        <div class="mb-3">
-                            <label asp-for="AppointmentDate" class="form-label fw-semibold"></label>
+                            <label asp-for="AppointmentDate" class="form-label fw-semibold">Ngày hẹn</label>
                             <input asp-for="AppointmentDate" class="form-control rounded-5" type="datetime-local" />
                             <span asp-validation-for="AppointmentDate" class="text-danger rounded-3 d-inline-block px-2"></span>
                         </div>
+
                         <div class="mb-3">
-                            <label asp-for="Note" class="form-label fw-semibold"></label>
-                            <input asp-for="Note" class="form-control rounded-5" />
+                            <label asp-for="Note" class="form-label fw-semibold">Ghi chú</label>
+                            <textarea asp-for="Note" class="form-control rounded-5" rows="3" placeholder="Nhập ghi chú (tùy chọn)"></textarea>
                             <span asp-validation-for="Note" class="text-danger rounded-3 d-inline-block px-2"></span>
                         </div>
+
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-info btn-lg rounded-5 fw-bold shadow-sm text-white">
                                 <i class="bi bi-check-circle"></i> Đăng kí
@@ -71,6 +75,7 @@
 </style>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
-

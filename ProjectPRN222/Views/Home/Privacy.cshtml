@@ -25,3 +25,38 @@
 
 <!-- Bootstrap Icons CDN (if not already included in _Layout) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+
+
+
+                public IActionResult Create()
+        {
+            int? currentUserId = HttpContext.Session.GetInt32("UserId");
+            if (currentUserId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var currentUser = _context.Users.FirstOrDefault(u => u.UserId == currentUserId);
+            if (currentUser == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            ViewData["StationId"] = new SelectList(_context.InspectionStations, "StationId", "Name");
+
+            ViewData["VehicleId"] = new SelectList(
+                _context.Vehicles.Where(v => v.OwnerId == currentUserId), "VehicleId", "PlateNumber"
+            );
+
+            ViewBag.CurrentUserFullName = currentUser.FullName;
+
+            var model = new InspectionAppointment
+            {
+                Status = "Pending",
+                AppointmentDate = DateTime.Now,
+                UserId = currentUserId.Value
+            };
+
+            return View(model);
+        }
