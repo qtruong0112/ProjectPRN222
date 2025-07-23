@@ -3,6 +3,9 @@
 @{
     ViewData["Title"] = "Chi tiết trạm đăng kiểm";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    
+    // Lấy thông tin role từ session
+    int? roleId = Context.Session.GetInt32("RoleId");
 }
 
 <div class="container py-4">
@@ -25,9 +28,13 @@
                     </dl>
                 </div>
                 <div class="card-footer bg-white rounded-bottom-5 border-0 text-center">
-                    <a asp-action="Edit" asp-route-id="@Model?.StationId" class="btn btn-info rounded-pill fw-semibold me-2 text-white">
-                        <i class="bi bi-pencil-square"></i> Chỉnh sửa
-                    </a>
+                    @* Chỉ Admin và Station Manager mới được chỉnh sửa *@
+                    @if (roleId == 3 || roleId == 5)
+                    {
+                        <a asp-action="Edit" asp-route-id="@Model?.StationId" class="btn btn-info rounded-pill fw-semibold me-2 text-white">
+                            <i class="bi bi-pencil-square"></i> Chỉnh sửa
+                        </a>
+                    }
                     <a asp-action="Index" class="btn btn-outline-secondary rounded-pill fw-semibold back-btn">
                         <i class="bi bi-arrow-left"></i> Quay lại danh sách
                     </a>

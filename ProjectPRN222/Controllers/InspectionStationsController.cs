@@ -10,8 +10,6 @@ using ProjectPRN222.Models;
 
 namespace ProjectPRN222.Controllers
 {
-
-    [RoleAllow(5, 3)]
     public class InspectionStationsController : Controller
     {
         private readonly PrnprojectContext _context;
@@ -21,7 +19,7 @@ namespace ProjectPRN222.Controllers
             _context = context;
         }
 
-        // GET: InspectionStations - Với filter  
+        // GET: InspectionStations - Với filter - Tất cả user có thể xem
         public async Task<IActionResult> Index(string name = null, string address = null, string email = null)
         {
             var query = _context.InspectionStations.AsQueryable();
