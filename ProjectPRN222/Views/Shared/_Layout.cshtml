@@ -33,8 +33,128 @@
                 </button>
                 <div class="collapse navbar-collapse" id="mainNavbar">
                     
-
-                   
+                    <!-- Main Navigation Menu based on Role -->
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        @if (!string.IsNullOrEmpty(fullName))
+                        {
+                            @if (roleId == 1)
+                            {
+                                @* Chủ xe (Owner) *@
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom" asp-controller="Vehicles" asp-action="Index">
+                                        <i class="bi bi-car-front"></i> Xe của tôi
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom" asp-controller="InspectionAppointments" asp-action="Index">
+                                        <i class="bi bi-calendar-check"></i> Lịch hẹn
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom" asp-controller="InspectionRecords" asp-action="ForOwnerVehicle">
+                                        <i class="bi bi-clipboard-data"></i> Kết quả kiểm định
+                                    </a>
+                                </li>
+                            }
+                            else if (roleId == 2)
+                            {
+                                @* Nhân viên KĐ (Inspector) *@
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom" asp-controller="InspectionRecords" asp-action="Index">
+                                        <i class="bi bi-clipboard-data"></i> Quản lý kiểm định
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom" asp-controller="InspectionRecords" asp-action="Create">
+                                        <i class="bi bi-plus-circle"></i> Tạo phiếu kiểm định
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom" asp-controller="Vehicles" asp-action="Index">
+                                        <i class="bi bi-car-front"></i> Danh sách xe
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom" asp-controller="InspectionAppointments" asp-action="Index">
+                                        <i class="bi bi-calendar-check"></i> Lịch hẹn
+                                    </a>
+                                </li>
+                            }
+                            else if (roleId == 3)
+                            {
+                                @* Quản lý trạm (Station Manager) *@
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom" asp-controller="InspectionStations" asp-action="Index">
+                                        <i class="bi bi-building"></i> Quản lý trạm
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom" asp-controller="InspectionRecords" asp-action="Index">
+                                        <i class="bi bi-clipboard-data"></i> Kết quả kiểm định
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom" asp-controller="InspectionAppointments" asp-action="Index">
+                                        <i class="bi bi-calendar-check"></i> Lịch hẹn kiểm định
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom" asp-controller="Vehicles" asp-action="Index">
+                                        <i class="bi bi-car-front"></i> Danh sách xe
+                                    </a>
+                                </li>
+                            }
+                            else if (roleId == 4)
+                            {
+                                @* Cảnh sát (Police) *@
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom" asp-controller="InspectionRecords" asp-action="ForPolice">
+                                        <i class="bi bi-shield-check"></i> Tra cứu vi phạm
+                                    </a>
+                                </li>
+                            }
+                            else if (roleId == 5)
+                            {
+                                @* Admin *@
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle nav-link-custom" href="#" id="vehicleDropdown" role="button" data-bs-toggle="dropdown">
+                                        <i class="bi bi-car-front"></i> Quản lý xe
+                                    </a>
+                                    <ul class="dropdown-menu animate-dropdown">
+                                        <li><a class="dropdown-item" asp-controller="Vehicles" asp-action="Index"><i class="bi bi-list"></i> Danh sách xe</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Vehicles" asp-action="Create"><i class="bi bi-plus-circle"></i> Thêm xe mới</a></li>
+                                    </ul>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle nav-link-custom" href="#" id="inspectionDropdown" role="button" data-bs-toggle="dropdown">
+                                        <i class="bi bi-clipboard-data"></i> Kiểm định
+                                    </a>
+                                    <ul class="dropdown-menu animate-dropdown">
+                                        <li><a class="dropdown-item" asp-controller="InspectionRecords" asp-action="Index"><i class="bi bi-clipboard-data"></i> Kết quả kiểm định</a></li>
+                                        <li><a class="dropdown-item" asp-controller="InspectionRecords" asp-action="Create"><i class="bi bi-plus-circle"></i> Tạo phiếu kiểm định</a></li>
+                                        <li><a class="dropdown-item" asp-controller="InspectionAppointments" asp-action="Index"><i class="bi bi-calendar-check"></i> Lịch hẹn</a></li>
+                                        <li><a class="dropdown-item" asp-controller="InspectionRecords" asp-action="ForPolice"><i class="bi bi-shield-check"></i> Tra cứu vi phạm</a></li>
+                                    </ul>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom" asp-controller="InspectionStations" asp-action="Index">
+                                        <i class="bi bi-building"></i> Trạm kiểm định
+                                    </a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle nav-link-custom" href="#" id="systemDropdown" role="button" data-bs-toggle="dropdown">
+                                        <i class="bi bi-gear"></i> Hệ thống
+                                    </a>
+                                    <ul class="dropdown-menu animate-dropdown">
+                                        <li><a class="dropdown-item" asp-controller="Users" asp-action="Index"><i class="bi bi-people"></i> Quản lý người dùng</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Roles" asp-action="Index"><i class="bi bi-person-badge"></i> Quản lý vai trò</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" asp-controller="Notifications" asp-action="Create"><i class="bi bi-megaphone"></i> Tạo thông báo</a></li>
+                                    </ul>
+                                </li>
+                            }
+                        }
+                    </ul>
 
                     <ul class="navbar-nav ms-lg-3">
                         @if (!string.IsNullOrEmpty(fullName))
@@ -69,6 +189,7 @@
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end animate-dropdown" aria-labelledby="userDropdown">
                                     <li><a class="dropdown-item" asp-controller="Accounts" asp-action="Edit" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetInt32("UserId")"><i class="bi bi-pencil-square"></i> Thay đổi thông tin</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Accounts" asp-action="ChangePassword"><i class="bi bi-key"></i> Đổi mật khẩu</a></li>
                                     @if (roleId == 5)
                                     {
                                         <li><hr class="dropdown-divider"></li>

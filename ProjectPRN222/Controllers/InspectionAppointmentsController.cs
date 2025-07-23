@@ -30,12 +30,34 @@ namespace ProjectPRN222.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var appointments = await _context.InspectionAppointments
-                .Include(i => i.Station)
-                .Include(i => i.User)
-                .Include(i => i.Vehicle)
-                .Where(i => i.UserId == currentUserId)
-                .ToListAsync();
+            var currentUser = await _context.Users.FindAsync(currentUserId);
+
+            if (currentUser == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            List<InspectionAppointment> appointments;
+
+            if (currentUser.RoleId == 2) // Admin hoặc nhân viên
+            {
+                appointments = await _context.InspectionAppointments
+                    .Include(i => i.Station)
+                    .Include(i => i.User)
+                    .Include(i => i.Vehicle)
+                    .ToListAsync();
+            }
+            else
+            {
+                appointments = await _context.InspectionAppointments
+                    .Include(i => i.Station)
+                    .Include(i => i.User)
+                    .Include(i => i.Vehicle)
+                    .Where(i => i.UserId == currentUserId)
+                    .ToListAsync();
+            }
+
+
 
             return View(appointments);
         }
@@ -62,46 +84,100 @@ namespace ProjectPRN222.Controllers
         }
 
         // GET: InspectionAppointments/Create
+        // GET: InspectionAppointments/Create
+        // GET: InspectionAppointments/Create
         public IActionResult Create()
         {
-            ViewData["StationId"] = new SelectList(_context.InspectionStations, "StationId", "Name");
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "FullName");
-            ViewData["VehicleId"] = new SelectList(_context.Vehicles, "VehicleId", "PlateNumber");
-            var model = new InspectionAppointment { Status = "Pending", AppointmentDate = DateTime.Now };
+            int? currentUserId = HttpContext.Session.GetInt32("UserId");
+
+            if (currentUserId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var stations = _context.InspectionStations.ToList();
+            var userVehicles = _context.Vehicles.Where(v => v.OwnerId == currentUserId).ToList();
+
+            ViewData["StationId"] = new SelectList(stations, "StationId", "Name");
+            ViewData["VehicleId"] = new SelectList(userVehicles, "VehicleId", "PlateNumber");
+
+            var model = new InspectionAppointment
+            {
+                Status = "Pending",
+                AppointmentDate = DateTime.Now,
+                UserId = currentUserId.Value
+            };
+
             return View(model);
         }
 
         // POST: InspectionAppointments/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        // POST: InspectionAppointments/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AppointmentId,VehicleId,UserId,StationId,AppointmentDate,Status,Note")] InspectionAppointment inspectionAppointment)
+        public async Task<IActionResult> Create([Bind("VehicleId,StationId,AppointmentDate,Note,UserId,Status")] InspectionAppointment inspectionAppointment)
         {
-            if (ModelState.IsValid)
+            int? currentUserId = HttpContext.Session.GetInt32("UserId");
+
+            if (currentUserId == null)
             {
-                _context.Add(inspectionAppointment);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Login", "Account");
             }
 
-            // DEBUG: In lỗi ModelState
-            foreach (var key in ModelState.Keys)
+            if (inspectionAppointment.UserId == 0)
+                inspectionAppointment.UserId = currentUserId.Value;
+
+            if (string.IsNullOrEmpty(inspectionAppointment.Status))
+                inspectionAppointment.Status = "Pending";
+
+            if (inspectionAppointment.VehicleId == 0)
             {
-                var errors = ModelState[key].Errors;
-                foreach (var error in errors)
+                ModelState.AddModelError("VehicleId", "Vui lòng chọn xe");
+            }
+
+            if (inspectionAppointment.StationId == 0)
+            {
+                ModelState.AddModelError("StationId", "Vui lòng chọn trạm đăng kiểm");
+            }
+
+            if (inspectionAppointment.AppointmentDate == default(DateTime) || inspectionAppointment.AppointmentDate < DateTime.Now)
+            {
+                ModelState.AddModelError("AppointmentDate", "Vui lòng chọn ngày hẹn hợp lệ");
+            }
+
+            ModelState.Remove("Station");
+            ModelState.Remove("User");
+            ModelState.Remove("Vehicle");
+
+            if (ModelState.IsValid)
+            {
+                var vehicleExists = await _context.Vehicles.AnyAsync(v => v.VehicleId == inspectionAppointment.VehicleId);
+                var stationExists = await _context.InspectionStations.AnyAsync(s => s.StationId == inspectionAppointment.StationId);
+                var userExists = await _context.Users.AnyAsync(u => u.UserId == inspectionAppointment.UserId);
+
+                if (!vehicleExists)
+                    ModelState.AddModelError("VehicleId", "Vehicle not found");
+                if (!stationExists)
+                    ModelState.AddModelError("StationId", "Station not found");
+                if (!userExists)
+                    ModelState.AddModelError("UserId", "User not found");
+
+                if (vehicleExists && stationExists && userExists)
                 {
-                    Console.WriteLine($"Field: {key}, Error: {error.ErrorMessage}");
+                    _context.Add(inspectionAppointment);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
             }
 
-            // Re-fill dropdowns if model state is invalid
-            ViewData["StationId"] = new SelectList(_context.InspectionStations, "StationId", "Name", inspectionAppointment.StationId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "FullName", inspectionAppointment.UserId);
-            ViewData["VehicleId"] = new SelectList(_context.Vehicles, "VehicleId", "PlateNumber", inspectionAppointment.VehicleId);
+            var stations = await _context.InspectionStations.ToListAsync();
+            var userVehicles = await _context.Vehicles.Where(v => v.OwnerId == currentUserId).ToListAsync();
+
+            ViewData["StationId"] = new SelectList(stations, "StationId", "Name", inspectionAppointment.StationId);
+            ViewData["VehicleId"] = new SelectList(userVehicles, "VehicleId", "PlateNumber", inspectionAppointment.VehicleId);
+
             return View(inspectionAppointment);
         }
+
 
 
         // GET: InspectionAppointments/Edit/5

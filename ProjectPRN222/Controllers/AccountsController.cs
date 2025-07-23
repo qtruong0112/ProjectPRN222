@@ -112,7 +112,7 @@ namespace ProjectPRN222.Controllers
             // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
             [HttpPost]
             [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Edit(int id, [Bind("UserId,FullName,Email,Password,Phone,Address,RoleId")] User user)
+            public async Task<IActionResult> Edit(int id, [Bind("UserId,FullName,Email,Phone,Address,RoleId,Password")] User user)
             {
                 if (id != user.UserId)
                 {
@@ -123,6 +123,16 @@ namespace ProjectPRN222.Controllers
                 {
                     try
                     {
+                        // Get existing user to preserve password
+                        var existingUser = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == id);
+                        if (existingUser == null)
+                        {
+                            return NotFound();
+                        }
+
+                        // Preserve the original password
+                        user.Password = existingUser.Password;
+                        
                         _context.Update(user);
                         await _context.SaveChangesAsync();
                     }
@@ -141,6 +151,85 @@ namespace ProjectPRN222.Controllers
                 }
                 ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleId", user.RoleId);
                 return View(user);
+            }
+
+            // GET: ChangePassword
+            public IActionResult ChangePassword()
+            {
+                return View();
+            }
+
+            // POST: ChangePassword
+            [HttpPost]
+            [ValidateAntiForgeryToken]
+            public async Task<IActionResult> ChangePassword(string currentPassword, string newPassword, string confirmPassword)
+            {
+                var userId = HttpContext.Session.GetInt32("UserId");
+                if (!userId.HasValue)
+                {
+                    return RedirectToAction("Login");
+                }
+
+                // Validation
+                if (string.IsNullOrWhiteSpace(currentPassword))
+                {
+                    ModelState.AddModelError("currentPassword", "Mật khẩu hiện tại là bắt buộc");
+                }
+                if (string.IsNullOrWhiteSpace(newPassword))
+                {
+                    ModelState.AddModelError("newPassword", "Mật khẩu mới là bắt buộc");
+                }
+                else if (newPassword.Length < 6)
+                {
+                    ModelState.AddModelError("newPassword", "Mật khẩu mới phải có ít nhất 6 ký tự");
+                }
+                if (newPassword != confirmPassword)
+                {
+                    ModelState.AddModelError("confirmPassword", "Xác nhận mật khẩu không khớp");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return View();
+                }
+
+                try
+                {
+                    var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId.Value);
+                    if (user == null)
+                    {
+                        return NotFound();
+                    }
+
+                    // Verify current password
+                    bool isCurrentPasswordValid;
+                    if (user.Password.StartsWith("$2")) // BCrypt hash
+                    {
+                        isCurrentPasswordValid = BCrypt.Net.BCrypt.Verify(currentPassword, user.Password);
+                    }
+                    else
+                    {
+                        isCurrentPasswordValid = (currentPassword == user.Password);
+                    }
+
+                    if (!isCurrentPasswordValid)
+                    {
+                        ModelState.AddModelError("currentPassword", "Mật khẩu hiện tại không đúng");
+                        return View();
+                    }
+
+                    // Update password with hash
+                    user.Password = PasswordHelper.HashPassword(newPassword);
+                    await _context.SaveChangesAsync();
+
+                    ViewBag.Success = "Đổi mật khẩu thành công!";
+                    return View();
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError("", "Có lỗi xảy ra khi đổi mật khẩu. Vui lòng thử lại.");
+                    return View();
+                }
             }
             private bool UserExists(int id)
             {
