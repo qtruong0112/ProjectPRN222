@@ -5,6 +5,7 @@ using static System.Collections.Specialized.BitVector32;
 
 namespace ProjectPRN222.Controllers
 {
+    [RoleAllow(5, 3)]
     public class StatisticalsController : Controller
     {
         private readonly PrnprojectContext _context;

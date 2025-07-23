@@ -104,7 +104,8 @@ namespace ProjectPRN222.Controllers
                     return NotFound();
                 }
                 ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleId", user.RoleId);
-                return View(user);
+                ViewBag.StationList = new SelectList(_context.InspectionStations, "StationId", "Name", user.StationId);
+            return View(user);
             }
 
             // POST: Users/Edit/5
@@ -112,7 +113,7 @@ namespace ProjectPRN222.Controllers
             // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
             [HttpPost]
             [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Edit(int id, [Bind("UserId,FullName,Email,Phone,Address,RoleId,Password")] User user)
+            public async Task<IActionResult> Edit(int id, [Bind("UserId,FullName,Email,Phone,StationId,Address,RoleId,Password")] User user)
             {
                 if (id != user.UserId)
                 {
@@ -150,7 +151,8 @@ namespace ProjectPRN222.Controllers
                     return RedirectToAction("Index", "Home");
                 }
                 ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleId", user.RoleId);
-                return View(user);
+            ViewBag.StationList = new SelectList(_context.InspectionStations, "StationId", "Name", user.StationId);
+            return View(user);
             }
 
             // GET: ChangePassword

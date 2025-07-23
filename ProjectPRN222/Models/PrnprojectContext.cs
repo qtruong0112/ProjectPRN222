@@ -144,7 +144,7 @@ public partial class PrnprojectContext : DbContext
 
             entity.Property(e => e.NotificationId).HasColumnName("NotificationID");
             entity.Property(e => e.IsRead).HasDefaultValue(false);
-            entity.Property(e => e.Message).HasColumnType("text");
+            entity.Property(e => e.Message).HasMaxLength(100);
             entity.Property(e => e.SentDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
@@ -187,11 +187,16 @@ public partial class PrnprojectContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.ResetPasswordToken).HasMaxLength(255);
             entity.Property(e => e.RoleId).HasColumnName("RoleID");
+            entity.Property(e => e.StationId).HasColumnName("StationID");
             entity.Property(e => e.TokenExpiry).HasColumnType("datetime");
 
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)
                 .HasConstraintName("FK_Users_Role");
+
+            entity.HasOne(d => d.Station).WithMany(p => p.Users)
+                .HasForeignKey(d => d.StationId)
+                .HasConstraintName("FK_Users_Station");
         });
 
         modelBuilder.Entity<Vehicle>(entity =>
