@@ -3,6 +3,9 @@
 @{
     ViewData["Title"] = "Danh sách trạm đăng kiểm";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    
+    // Lấy thông tin role từ session
+    int? roleId = Context.Session.GetInt32("RoleId");
 }
 
 <style>
@@ -60,12 +63,15 @@
         </div>
     </div>
 
-    <div class="mb-3 text-end">
-       
-        <a asp-action="Create" class="btn btn-info fw-bold text-white">
-            <i class="bi bi-plus-circle me-1"></i> Thêm trạm mới
-        </a>
-    </div>
+    @* Chỉ Admin và Station Manager mới được tạo trạm mới *@
+    @if (roleId == 3 || roleId == 5)
+    {
+        <div class="mb-3 text-end">
+            <a asp-action="Create" class="btn btn-info fw-bold text-white">
+                <i class="bi bi-plus-circle me-1"></i> Thêm trạm mới
+            </a>
+        </div>
+    }
     <div class="table-responsive">
         <table class="table table-bordered table-hover align-middle text-center rounded-4 overflow-hidden custom-rounded-table">
             <thead class="bg-info text-white">
@@ -88,19 +94,25 @@
                         </td>
                         <td>@item.Email</td>
                         <td>
-                            <a asp-action="Edit" asp-route-id="@item.StationId" class="btn btn-sm btn-info text-white me-1">
-                                <i class="bi bi-pencil-square"></i>
-                            </a>
+                            @* Tất cả user đều có thể xem Details *@
                             <a asp-action="Details" asp-route-id="@item.StationId" class="btn btn-sm btn-warning me-1 text-white">
                                 <i class="bi bi-info-circle"></i>
                             </a>
-                            <a asp-action="Delete" asp-route-id="@item.StationId" class="btn btn-sm btn-danger">
-                                <i class="bi bi-trash"></i>
-                            </a>
-                            <a asp-controller="Statisticals" asp-action="Index" asp-route-stationId="@item.StationId"
-                               class="btn btn-sm btn-success">
-                                <i class="bi bi-bar-chart"></i> Thống kê
-                            </a>
+                            
+                            @* Chỉ Admin và Station Manager mới có thể Edit, Delete và xem Thống kê *@
+                            @if (roleId == 3 || roleId == 5)
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.StationId" class="btn btn-sm btn-info text-white me-1">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.StationId" class="btn btn-sm btn-danger me-1">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                                <a asp-controller="Statisticals" asp-action="Index" asp-route-stationId="@item.StationId"
+                                   class="btn btn-sm btn-success">
+                                    <i class="bi bi-bar-chart"></i> Thống kê
+                                </a>
+                            }
                         </td>
                     </tr>
                 }

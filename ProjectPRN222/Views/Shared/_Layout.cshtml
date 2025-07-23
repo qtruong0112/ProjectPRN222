@@ -55,6 +55,11 @@
                                         <i class="bi bi-clipboard-data"></i> Kết quả kiểm định
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom" asp-controller="InspectionStations" asp-action="Index">
+                                        <i class="bi bi-building"></i> Trạm kiểm định
+                                    </a>
+                                </li>
                             }
                             else if (roleId == 2)
                             {
@@ -190,11 +195,6 @@
                                 <ul class="dropdown-menu dropdown-menu-end animate-dropdown" aria-labelledby="userDropdown">
                                     <li><a class="dropdown-item" asp-controller="Accounts" asp-action="Edit" asp-route-id="@HttpContextAccessor.HttpContext.Session.GetInt32("UserId")"><i class="bi bi-pencil-square"></i> Thay đổi thông tin</a></li>
                                     <li><a class="dropdown-item" asp-controller="Accounts" asp-action="ChangePassword"><i class="bi bi-key"></i> Đổi mật khẩu</a></li>
-                                    @if (roleId == 5)
-                                    {
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item" asp-controller="Notifications" asp-action="Create">📢 Tạo thông báo</a></li>
-                                    }
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" asp-controller="Accounts" asp-action="Logout"><i class="bi bi-box-arrow-right"></i> Đăng xuất</a></li>
                                 </ul>
