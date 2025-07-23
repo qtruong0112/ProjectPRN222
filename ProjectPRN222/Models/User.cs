@@ -48,6 +48,8 @@ public partial class User
     [DataType(DataType.DateTime)]
     public DateTime? TokenExpiry { get; set; }
 
+    public int? StationId { get; set; }
+
     public virtual ICollection<InspectionAppointment> InspectionAppointments { get; set; } = new List<InspectionAppointment>();
 
     public virtual ICollection<InspectionRecord> InspectionRecords { get; set; } = new List<InspectionRecord>();
@@ -57,6 +59,8 @@ public partial class User
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 
     public virtual Role? Role { get; set; }
+
+    public virtual InspectionStation? Station { get; set; }
 
     public virtual ICollection<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
 }

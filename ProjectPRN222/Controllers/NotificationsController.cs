@@ -24,22 +24,74 @@ namespace ProjectPRN222.Controllers
 
         // Trang tạo thông báo - admin only
         [RoleAllow(5)]
-        public IActionResult Create() => View();
+        public IActionResult Create() 
+        {
+            // Load danh sách roles để hiển thị trong dropdown
+            ViewBag.Roles = _context.Roles.Select(r => new { r.RoleId, r.RoleName }).ToList();
+            return View();
+        }
 
         // Xử lý tạo thông báo - admin only
         [RoleAllow(5)]
         [HttpPost]
-        public async Task<IActionResult> Create(int userId, string message)
+        public async Task<IActionResult> Create(string notificationType, int? userId, int? roleId, string message)
         {
-            if (string.IsNullOrEmpty(message) || userId <= 0)
+            // Load danh sách roles lại để hiển thị trong trường hợp có lỗi
+            ViewBag.Roles = _context.Roles.Select(r => new { r.RoleId, r.RoleName }).ToList();
+
+            if (string.IsNullOrEmpty(message))
             {
-                ViewBag.Error = "Vui lòng nhập đầy đủ thông tin";
+                ViewBag.Error = "Vui lòng nhập nội dung thông báo";
                 return View();
             }
 
-            ViewBag.Success = await CreateNotification(userId, message) 
-                ? "Gửi thông báo thành công!" 
-                : (ViewBag.Error = "Có lỗi xảy ra khi gửi thông báo");
+            try
+            {
+                int sentCount = 0;
+
+                switch (notificationType)
+                {
+                    case "single":
+                        if (userId == null || userId <= 0)
+                        {
+                            ViewBag.Error = "Vui lòng nhập User ID hợp lệ";
+                            return View();
+                        }
+                        bool singleResult = await CreateNotification(userId.Value, message);
+                        sentCount = singleResult ? 1 : 0;
+                        break;
+
+                    case "role":
+                        if (roleId == null || roleId <= 0)
+                        {
+                            ViewBag.Error = "Vui lòng chọn vai trò";
+                            return View();
+                        }
+                        sentCount = await CreateNotificationForRole(roleId.Value, message);
+                        break;
+
+                    case "all":
+                        sentCount = await CreateNotificationForAll(message);
+                        break;
+
+                    default:
+                        ViewBag.Error = "Vui lòng chọn loại thông báo";
+                        return View();
+                }
+
+                if (sentCount > 0)
+                {
+                    ViewBag.Success = $"Gửi thông báo thành công cho {sentCount} người dùng!";
+                }
+                else
+                {
+                    ViewBag.Error = "Không có người dùng nào nhận được thông báo";
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Có lỗi xảy ra khi gửi thông báo: " + ex.Message;
+            }
 
             return View();
         }
@@ -67,6 +119,80 @@ namespace ProjectPRN222.Controllers
                 return true;
             }
             catch { return false; }
+        }
+
+        // Tạo thông báo cho tất cả user có role cụ thể
+        private async Task<int> CreateNotificationForRole(int roleId, string message)
+        {
+            try
+            {
+                var users = await _context.Users.Where(u => u.RoleId == roleId).ToListAsync();
+                int sentCount = 0;
+
+                foreach (var user in users)
+                {
+                    _context.Notifications.Add(new Notification
+                    {
+                        UserId = user.UserId,
+                        Message = message,
+                        SentDate = DateTime.Now,
+                        IsRead = false
+                    });
+
+                    // Gửi SignalR notification
+                    await _hubContext.Clients.Group($"User_{user.UserId}").SendAsync("ReceiveNotification", new
+                    {
+                        message,
+                        timestamp = DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+                    });
+
+                    sentCount++;
+                }
+
+                await _context.SaveChangesAsync();
+                return sentCount;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        // Tạo thông báo cho tất cả user
+        private async Task<int> CreateNotificationForAll(string message)
+        {
+            try
+            {
+                var users = await _context.Users.ToListAsync();
+                int sentCount = 0;
+
+                foreach (var user in users)
+                {
+                    _context.Notifications.Add(new Notification
+                    {
+                        UserId = user.UserId,
+                        Message = message,
+                        SentDate = DateTime.Now,
+                        IsRead = false
+                    });
+
+                    // Gửi SignalR notification
+                    await _hubContext.Clients.Group($"User_{user.UserId}").SendAsync("ReceiveNotification", new
+                    {
+                        message,
+                        timestamp = DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+                    });
+
+                    sentCount++;
+                }
+
+                await _context.SaveChangesAsync();
+                return sentCount;
+            }
+            catch
+            {
+                return 0;
+            }
         }
 
         // API: Lấy danh sách thông báo

@@ -34,4 +34,6 @@ public partial class InspectionStation
     public virtual ICollection<InspectionAppointment> InspectionAppointments { get; set; } = new List<InspectionAppointment>();
 
     public virtual ICollection<InspectionRecord> InspectionRecords { get; set; } = new List<InspectionRecord>();
+
+    public virtual ICollection<User> Users { get; set; } = new List<User>();
 }

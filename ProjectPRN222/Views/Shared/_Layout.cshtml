@@ -250,10 +250,10 @@
                             if (data.data.length > 0) {
                                 $.each(data.data, function(i, notification) {
                                     html += `
-                                        <li><a class="dropdown-item ${!notification.isRead ? 'fw-bold' : ''}" href="/Notifications">
+                                        <li><div class="dropdown-item-text ${!notification.isRead ? 'fw-bold' : ''}">
                                             <div>${notification.message}</div>
                                             <small class="text-muted">${notification.sentDate}</small>
-                                        </a></li>
+                                        </div></li>
                                     `;
                                 });
                             } else {
