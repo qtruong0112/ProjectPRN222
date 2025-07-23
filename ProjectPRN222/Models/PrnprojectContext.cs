@@ -38,7 +38,7 @@ public partial class PrnprojectContext : DbContext
     {
         modelBuilder.Entity<InspectionAppointment>(entity =>
         {
-            entity.HasKey(e => e.AppointmentId).HasName("PK__Inspecti__8ECDFCA26432405D");
+            entity.HasKey(e => e.AppointmentId).HasName("PK__Inspecti__8ECDFCA22AE275E9");
 
             entity.Property(e => e.AppointmentId).HasColumnName("AppointmentID");
             entity.Property(e => e.AppointmentDate).HasColumnType("datetime");
@@ -68,7 +68,7 @@ public partial class PrnprojectContext : DbContext
 
         modelBuilder.Entity<InspectionRecord>(entity =>
         {
-            entity.HasKey(e => e.RecordId).HasName("PK__Inspecti__FBDF78C94E60AFFF");
+            entity.HasKey(e => e.RecordId).HasName("PK__Inspecti__FBDF78C9A5BF82EA");
 
             entity.Property(e => e.RecordId).HasColumnName("RecordID");
             entity.Property(e => e.Co2emission)
@@ -90,24 +90,24 @@ public partial class PrnprojectContext : DbContext
             entity.HasOne(d => d.Inspector).WithMany(p => p.InspectionRecords)
                 .HasForeignKey(d => d.InspectorId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Inspectio__Inspe__32E0915F");
+                .HasConstraintName("FK__Inspectio__Inspe__48CFD27E");
 
             entity.HasOne(d => d.Station).WithMany(p => p.InspectionRecords)
                 .HasForeignKey(d => d.StationId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Inspectio__Stati__31EC6D26");
+                .HasConstraintName("FK__Inspectio__Stati__49C3F6B7");
 
             entity.HasOne(d => d.Vehicle).WithMany(p => p.InspectionRecords)
                 .HasForeignKey(d => d.VehicleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Inspectio__Vehic__30F848ED");
+                .HasConstraintName("FK__Inspectio__Vehic__4AB81AF0");
         });
 
         modelBuilder.Entity<InspectionStation>(entity =>
         {
-            entity.HasKey(e => e.StationId).HasName("PK__Inspecti__E0D8A6DD82804CA5");
+            entity.HasKey(e => e.StationId).HasName("PK__Inspecti__E0D8A6DD51269B1B");
 
-            entity.HasIndex(e => e.Email, "UQ__Inspecti__A9D105346121600F").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__Inspecti__A9D10534EE8E0A67").IsUnique();
 
             entity.Property(e => e.StationId).HasColumnName("StationID");
             entity.Property(e => e.Email)
@@ -121,7 +121,7 @@ public partial class PrnprojectContext : DbContext
 
         modelBuilder.Entity<Log>(entity =>
         {
-            entity.HasKey(e => e.LogId).HasName("PK__Logs__5E5499A868ACFE2F");
+            entity.HasKey(e => e.LogId).HasName("PK__Logs__5E5499A88BCA0CD8");
 
             entity.Property(e => e.LogId).HasColumnName("LogID");
             entity.Property(e => e.Action)
@@ -135,12 +135,12 @@ public partial class PrnprojectContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.Logs)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Logs__UserID__3B75D760");
+                .HasConstraintName("FK__Logs__UserID__4BAC3F29");
         });
 
         modelBuilder.Entity<Notification>(entity =>
         {
-            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__20CF2E329BB0744C");
+            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__20CF2E321D798D6A");
 
             entity.Property(e => e.NotificationId).HasColumnName("NotificationID");
             entity.Property(e => e.IsRead).HasDefaultValue(false);
@@ -153,12 +153,12 @@ public partial class PrnprojectContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.Notifications)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Notificat__UserI__37A5467C");
+                .HasConstraintName("FK__Notificat__UserI__4CA06362");
         });
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleId).HasName("PK__Role__8AFACE3A110E3FB4");
+            entity.HasKey(e => e.RoleId).HasName("PK__Role__8AFACE3A603112B7");
 
             entity.ToTable("Role");
 
@@ -170,9 +170,9 @@ public partial class PrnprojectContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CCAC57283659");
+            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CCAC618EBA17");
 
-            entity.HasIndex(e => e.Email, "UQ__Users__A9D1053432B1CC2D").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__Users__A9D1053478ED42A6").IsUnique();
 
             entity.Property(e => e.UserId).HasColumnName("UserID");
             entity.Property(e => e.Email)
@@ -201,9 +201,9 @@ public partial class PrnprojectContext : DbContext
 
         modelBuilder.Entity<Vehicle>(entity =>
         {
-            entity.HasKey(e => e.VehicleId).HasName("PK__Vehicles__476B54B26CE7C184");
+            entity.HasKey(e => e.VehicleId).HasName("PK__Vehicles__476B54B25EA384A0");
 
-            entity.HasIndex(e => e.PlateNumber, "UQ__Vehicles__036926241E377344").IsUnique();
+            entity.HasIndex(e => e.PlateNumber, "UQ__Vehicles__03692624308D1CF0").IsUnique();
 
             entity.Property(e => e.VehicleId).HasColumnName("VehicleID");
             entity.Property(e => e.Brand)
@@ -223,7 +223,7 @@ public partial class PrnprojectContext : DbContext
             entity.HasOne(d => d.Owner).WithMany(p => p.Vehicles)
                 .HasForeignKey(d => d.OwnerId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Vehicles__OwnerI__29572725");
+                .HasConstraintName("FK__Vehicles__OwnerI__4E88ABD4");
         });
 
         OnModelCreatingPartial(modelBuilder);

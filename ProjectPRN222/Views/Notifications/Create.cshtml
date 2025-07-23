@@ -22,9 +22,39 @@
 
                     <form method="post">
                         <div class="mb-3">
+                            <label for="notificationType" class="form-label">Loại thông báo</label>
+                            <select class="form-control" id="notificationType" name="notificationType" required onchange="toggleFields()">
+                                <option value="">-- Chọn loại thông báo --</option>
+                                <option value="single">Gửi cho 1 người dùng cụ thể</option>
+                                <option value="role">Gửi theo vai trò</option>
+                                <option value="all">Gửi cho tất cả người dùng</option>
+                            </select>
+                        </div>
+
+                        <!-- Trường User ID - chỉ hiển thị khi chọn "single" -->
+                        <div class="mb-3" id="userIdGroup" style="display: none;">
                             <label for="userId" class="form-label">User ID</label>
-                            <input type="number" class="form-control" id="userId" name="userId" required>
+                            <input type="number" class="form-control" id="userId" name="userId">
                             <small class="form-text text-muted">Nhập ID của người dùng</small>
+                        </div>
+
+                        <!-- Trường Role - chỉ hiển thị khi chọn "role" -->
+                        <div class="mb-3" id="roleGroup" style="display: none;">
+                            <label for="roleId" class="form-label">Vai trò</label>
+                            <select class="form-control" id="roleId" name="roleId">
+                                <option value="">-- Chọn vai trò --</option>
+                                @foreach (var role in ViewBag.Roles)
+                                {
+                                    <option value="@role.RoleId">@role.RoleName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Thông tin khi chọn "all" -->
+                        <div class="mb-3" id="allUsersInfo" style="display: none;">
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i> Thông báo sẽ được gửi cho tất cả người dùng trong hệ thống
+                            </div>
                         </div>
                         
                         <div class="mb-3">
@@ -42,4 +72,44 @@
             </div>
         </div>
     </div>
-</div> 
+</div>
+
+<script>
+    function toggleFields() {
+        const notificationType = document.getElementById('notificationType').value;
+        const userIdGroup = document.getElementById('userIdGroup');
+        const roleGroup = document.getElementById('roleGroup');
+        const allUsersInfo = document.getElementById('allUsersInfo');
+        const userIdInput = document.getElementById('userId');
+        const roleIdSelect = document.getElementById('roleId');
+
+        // Ẩn tất cả các trường
+        userIdGroup.style.display = 'none';
+        roleGroup.style.display = 'none';
+        allUsersInfo.style.display = 'none';
+
+        // Xóa required attribute
+        userIdInput.removeAttribute('required');
+        roleIdSelect.removeAttribute('required');
+
+        // Hiển thị trường tương ứng và thêm required
+        switch (notificationType) {
+            case 'single':
+                userIdGroup.style.display = 'block';
+                userIdInput.setAttribute('required', 'required');
+                break;
+            case 'role':
+                roleGroup.style.display = 'block';
+                roleIdSelect.setAttribute('required', 'required');
+                break;
+            case 'all':
+                allUsersInfo.style.display = 'block';
+                break;
+        }
+    }
+
+    // Khởi tạo khi trang load
+    document.addEventListener('DOMContentLoaded', function() {
+        toggleFields();
+    });
+</script>
