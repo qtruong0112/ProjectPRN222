@@ -21,7 +21,7 @@ public partial class InspectionAppointment
 
     public virtual InspectionStation Station { get; set; } = null!;
 
-    public virtual User User { get; set; } = null!;
+    public virtual User? User { get; set; } = null!;
 
-    public virtual Vehicle Vehicle { get; set; } = null!;
+    public virtual Vehicle? Vehicle { get; set; } = null!;
 }

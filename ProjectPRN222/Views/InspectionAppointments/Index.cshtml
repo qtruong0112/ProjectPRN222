@@ -7,19 +7,25 @@
 
 <style>
     .custom-rounded-table {
-        border-radius: 1rem !important;
-        overflow: hidden;
+    border-radius: 1rem !important;
+    overflow: hidden;
     }
     .custom-rounded-table thead tr:first-child th:first-child {
-        border-top-left-radius: 1rem;
+    border-top-left-radius: 1rem;
     }
     .custom-rounded-table thead tr:first-child th:last-child {
-        border-top-right-radius: 1rem;
+    border-top-right-radius: 1rem;
     }
     .table-hover tbody tr:hover {
-        background-color: #e3f2fd;
+    background-color: #e3f2fd;
     }
 </style>
+
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    var fullName = HttpContextAccessor.HttpContext.Session.GetString("FullName");
+    var roleId = HttpContextAccessor.HttpContext.Session.GetInt32("RoleId");
+}
 
 <div class="container py-4">
     <h2 class="mb-4 text-center text-info fw-bold">
@@ -57,16 +63,22 @@
                         <td>@Html.DisplayFor(modelItem => item.Vehicle.Model)</td>
                         <td>@Html.DisplayFor(modelItem => item.Vehicle.Brand)</td>
                         <td>
-                            <a asp-action="Edit" asp-route-id="@item.AppointmentId" class="btn btn-sm btn-info text-white me-1">
-                                <i class="bi bi-pencil-square"></i>
-                            </a>
-                            <a asp-action="Details" asp-route-id="@item.AppointmentId" class="btn btn-sm btn-warning text-white me-1">
-                                <i class="bi bi-info-circle"></i>
-                            </a>
+                            @if(roleId != 1){
+                                <a asp-action="Edit" asp-route-id="@item.AppointmentId" class="btn btn-sm btn-info text-white me-1">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            }
+                            @if (roleId != 1)
+                            {
+                                <a asp-action="Details" asp-route-id="@item.AppointmentId" class="btn btn-sm btn-warning text-white me-1">
+                                    <i class="bi bi-info-circle"></i>
+                                </a>
+                            }
+                            
                             <a asp-action="Delete" asp-route-id="@item.AppointmentId" class="btn btn-sm btn-danger">
                                 <i class="bi bi-trash"></i>
                             </a>
-                            @if (item.Status == "Pending")
+                            @if (item.Status == "Pending" && roleId == 2)
                             {
                                 <a asp-controller="InspectionRecords" asp-action="CreateFromAppointment" asp-route-appointmentId="@item.AppointmentId" class="btn btn-success btn-sm">
                                     <i class="bi bi-clipboard-plus"></i> Tạo phiếu kiểm định
