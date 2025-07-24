@@ -25,6 +25,10 @@
     <h2 class="mb-4 text-center text-info fw-bold">
         <i class="bi bi-people"></i> Danh sách người dùng
     </h2>
+    @if (TempData["DeleteError"] != null)
+    {
+        <div class="alert alert-danger">@TempData["DeleteError"]</div>
+    }
     <div class="mb-3 text-end">
         <a asp-action="Create" class="btn btn-info fw-bold text-white">
             <i class="bi bi-person-plus me-1"></i> Thêm người dùng
@@ -36,7 +40,6 @@
                 <tr>
                     <th><i class="bi bi-person"></i> @Html.DisplayNameFor(model => model.FullName)</th>
                     <th><i class="bi bi-envelope"></i> @Html.DisplayNameFor(model => model.Email)</th>
-                    <th><i class="bi bi-key"></i> @Html.DisplayNameFor(model => model.Password)</th>
                     <th><i class="bi bi-telephone"></i> @Html.DisplayNameFor(model => model.Phone)</th>
                     <th><i class="bi bi-geo"></i> @Html.DisplayNameFor(model => model.Address)</th>
                     <th><i class="bi bi-person-badge"></i> @Html.DisplayNameFor(model => model.Role)</th>
@@ -48,7 +51,6 @@
                     <tr>
                         <td>@Html.DisplayFor(modelItem => item.FullName)</td>
                         <td>@Html.DisplayFor(modelItem => item.Email)</td>
-                        <td>@Html.DisplayFor(modelItem => item.Password)</td>
                         <td>@Html.DisplayFor(modelItem => item.Phone)</td>
                         <td>@Html.DisplayFor(modelItem => item.Address)</td>
                         <td>@Html.DisplayFor(modelItem => item.Role.RoleName)</td>

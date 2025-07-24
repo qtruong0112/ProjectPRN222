@@ -133,7 +133,7 @@ namespace ProjectPRN222.Controllers
             return View(inspectionStation);
         }
 
-        // GET: InspectionStations/Delete/5 - Chỉ Admin có thể xóa trạm kiểm định
+        // GET: InspectionStations/Delete/5 
         [RoleAllow(3, 5)]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -152,7 +152,7 @@ namespace ProjectPRN222.Controllers
             return View(inspectionStation);
         }
 
-        // POST: InspectionStations/Delete/5 - Chỉ Admin có thể xóa trạm kiểm định
+        // POST: InspectionStations/Delete/5 
         [RoleAllow(3, 5)]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]

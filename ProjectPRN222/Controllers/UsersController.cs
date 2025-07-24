@@ -49,7 +49,7 @@ namespace ProjectPRN222.Controllers
         
         public IActionResult Create()
         {
-            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleId");
+            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleName");
             return View();
         }
 
@@ -62,11 +62,27 @@ namespace ProjectPRN222.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Kiểm tra trùng email
+                var existing = await _context.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
+                if (existing != null)
+                {
+                    ModelState.AddModelError("Email", "Email đã được sử dụng.");
+                    ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleName", user.RoleId);
+                    return View(user);
+                }
+                // Kiểm tra trùng số điện thoại
+                var existingPhone = await _context.Users.FirstOrDefaultAsync(u => u.Phone == user.Phone);
+                if (existingPhone != null)
+                {
+                    ModelState.AddModelError("Phone", "Số điện thoại đã được sử dụng.");
+                    ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleName", user.RoleId);
+                    return View(user);
+                }
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleId", user.RoleId);
+            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleName", user.RoleId);
             return View(user);
         }
         [RoleAllow(5, 1)]
@@ -83,7 +99,7 @@ namespace ProjectPRN222.Controllers
             {
                 return NotFound();
             }
-            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleId", user.RoleId);
+            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleName", user.RoleId);
             return View(user);
         }
 
@@ -148,12 +164,26 @@ namespace ProjectPRN222.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user != null)
+            var user = await _context.Users
+                .Include(u => u.Notifications)
+                .Include(u => u.InspectionRecords)
+                .Include(u => u.Vehicles)
+                .Include(u => u.Logs)
+                .Include(u => u.InspectionAppointments)
+                .FirstOrDefaultAsync(u => u.UserId == id);
+
+            if (user == null)
             {
-                _context.Users.Remove(user);
+                return NotFound();
             }
 
+            if (user.Notifications.Any() || user.InspectionRecords.Any() || user.Vehicles.Any() || user.Logs.Any() || user.InspectionAppointments.Any())
+            {
+                TempData["DeleteError"] = "Không thể xóa người dùng vì còn dữ liệu liên quan (thông báo, xe, lịch hẹn, kiểm định ...).";
+                return RedirectToAction(nameof(Index));
+            }
+
+            _context.Users.Remove(user);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

@@ -32,11 +32,17 @@ namespace ProjectPRN222.Controllers
                         return View(user);
                     }
 
-                user.Password = PasswordHelper.HashPassword(user.Password);
-                
-                user.RoleId = 1;
-                
-                _context.Users.Add(user);
+                    // Kiểm tra trùng số điện thoại
+                    var existingPhone = _context.Users.FirstOrDefault(u => u.Phone == user.Phone);
+                    if (existingPhone != null)
+                    {
+                        ModelState.AddModelError("Phone", "Số điện thoại đã được sử dụng.");
+                        return View(user);
+                    }
+
+                    user.Password = PasswordHelper.HashPassword(user.Password);
+                    user.RoleId = 1;
+                    _context.Users.Add(user);
                     _context.SaveChanges();
                     return RedirectToAction("Login");
                 }
