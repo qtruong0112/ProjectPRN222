@@ -38,7 +38,9 @@ public partial class Vehicle
     [Required(ErrorMessage = "Số máy là bắt buộc")]
     [Display(Name = "Số máy")]
     [StringLength(100, ErrorMessage = "Số máy không được vượt quá 100 ký tự")]
+    [RegularExpression(@"^[A-Z0-9]{6,20}$", ErrorMessage = "Số máy chỉ được gồm chữ in hoa và số, từ 6 đến 20 ký tự, không có dấu cách")]
     public string EngineNumber { get; set; } = null!;
+
 
     // Navigation properties
     public virtual ICollection<InspectionAppointment> InspectionAppointments { get; set; } = new List<InspectionAppointment>();
