@@ -395,7 +395,6 @@ namespace ProjectPRN222.Controllers
                 .Include(u => u.Notifications)
                 .Include(u => u.InspectionRecords)
                 .Include(u => u.Vehicles)
-                .Include(u => u.Logs)
                 .Include(u => u.InspectionAppointments)
                 .FirstOrDefaultAsync(u => u.UserId == id);
 
@@ -417,7 +416,7 @@ namespace ProjectPRN222.Controllers
                 }
             }
 
-            if (user.Notifications.Any() || user.InspectionRecords.Any() || user.Vehicles.Any() || user.Logs.Any() || user.InspectionAppointments.Any())
+            if (user.Notifications.Any() || user.InspectionRecords.Any() || user.Vehicles.Any() || user.InspectionAppointments.Any())
             {
                 TempData["DeleteError"] = "Không thể xóa người dùng vì còn dữ liệu liên quan (thông báo, xe, lịch hẹn, kiểm định ...).";
                 return RedirectToAction(nameof(Index));

@@ -21,7 +21,6 @@ public partial class PrnprojectContext : DbContext
 
     public virtual DbSet<InspectionStation> InspectionStations { get; set; }
 
-   
 
     public virtual DbSet<Notification> Notifications { get; set; }
 
@@ -119,7 +118,6 @@ public partial class PrnprojectContext : DbContext
                 .IsUnicode(false);
         });
 
-       
 
         modelBuilder.Entity<Notification>(entity =>
         {
