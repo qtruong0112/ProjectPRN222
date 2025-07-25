@@ -21,7 +21,6 @@
                     <form asp-action="Create" method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                        <input type="hidden" asp-for="RecordId" />
                         @if (isFromAppointment)
                         {
                             <input type="hidden" name="AppointmentId" value="@ViewBag.AppointmentId" />
