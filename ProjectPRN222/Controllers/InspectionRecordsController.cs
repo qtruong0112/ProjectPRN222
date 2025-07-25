@@ -341,7 +341,28 @@ public async Task<IActionResult> Create(
         return RedirectToAction(nameof(Index));
     }
 
+    // Khi ModelState không hợp lệ, cần set lại tất cả ViewData
+    int? currentUserId = HttpContext.Session.GetInt32("UserId");
+    var currentUser = _context.Users.Find(currentUserId);
+
     ViewData["InspectorId"] = new SelectList(_context.Users.Where(u => u.RoleId == 2), "UserId", "FullName", inspectionRecord.InspectorId);
+    
+    // Dropdown trạm - nếu là công nhân hoặc InspectionCenter thì chỉ hiển thị trạm của họ
+    var stations = _context.InspectionStations.AsQueryable();
+    if (currentUser != null && (currentUser.RoleId == 2 || currentUser.RoleId == 3) && currentUser.StationId.HasValue)
+    {
+        stations = stations.Where(s => s.StationId == currentUser.StationId.Value);
+    }
+    ViewData["StationId"] = new SelectList(stations, "StationId", "Name", inspectionRecord.StationId);
+
+    // Hiển thị Vehicle kèm tên chủ xe
+    var vehicles = _context.Vehicles.Include(v => v.Owner).ToList();
+    ViewData["VehicleId"] = new SelectList(vehicles.Select(v => new
+    {
+        VehicleId = v.VehicleId,
+        Display = v.PlateNumber + " - " + v.Owner.FullName
+    }), "VehicleId", "Display", inspectionRecord.VehicleId);
+
     return View(inspectionRecord);
 }
 
