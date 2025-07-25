@@ -99,11 +99,6 @@
                                         <i class="bi bi-calendar-check"></i> Lịch hẹn kiểm định
                                     </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link nav-link-custom" asp-controller="Vehicles" asp-action="Index">
-                                        <i class="bi bi-car-front"></i> Danh sách xe
-                                    </a>
-                                </li>
                             }
                             else if (roleId == 4)
                             {
@@ -236,7 +231,7 @@
     @if (!string.IsNullOrEmpty(fullName))
     {
         <script>
-            // Header Notifications - đơn giản
+            // Header Notifications 
             $(document).ready(function() {
                 // Sử dụng chung connection từ notifications.js
                 function loadHeaderNotifications() {

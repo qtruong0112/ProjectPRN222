@@ -24,6 +24,12 @@ namespace ProjectPRN222.Controllers
         [HttpPost]
         public async Task<IActionResult> ForgotPassword(string email)
         {
+            if (string.IsNullOrEmpty(email))
+            {
+                ModelState.AddModelError("", "Vui lòng nhập địa chỉ email.");
+                return View();
+            }
+
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
             if (user == null)
             {
@@ -33,15 +39,22 @@ namespace ProjectPRN222.Controllers
 
             var token = Guid.NewGuid().ToString();
             user.ResetPasswordToken = token;
-            // Sửa: Dùng DateTime.UtcNow thống nhất
             user.TokenExpiry = DateTime.UtcNow.AddHours(1);
 
             await _context.SaveChangesAsync();
 
             var resetLink = Url.Action("ResetPassword", "ForgotPassword", new { token = token }, Request.Scheme);
-            await EmailService.SendResetPasswordEmail(user.Email, resetLink);
+            
+            try
+            {
+                await EmailService.SendResetPasswordEmail(user.Email, resetLink);
+                ViewBag.Message = "Email đặt lại mật khẩu đã được gửi. Vui lòng kiểm tra hộp thư của bạn.";
+            }
+            catch
+            {
+                ViewBag.Error = "Có lỗi xảy ra khi gửi email. Vui lòng thử lại sau.";
+            }
 
-            ViewBag.Message = "Email đặt lại mật khẩu đã được gửi.";
             return View();
         }
 

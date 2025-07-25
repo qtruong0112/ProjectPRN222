@@ -186,7 +186,7 @@ namespace ProjectPRN222.Controllers
 
 
         // GET: InspectionAppointments/Edit/5
-        [RoleAllow(3, 2, 1)]
+        [RoleAllow(3, 1)]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -210,7 +210,7 @@ namespace ProjectPRN222.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [RoleAllow(3, 2, 1)]
+        [RoleAllow(3, 1)]
         public async Task<IActionResult> Edit(int id, [Bind("AppointmentId,VehicleId,UserId,StationId,AppointmentDate,Status,Note")] InspectionAppointment inspectionAppointment)
         {
             if (id != inspectionAppointment.AppointmentId)
@@ -245,7 +245,7 @@ namespace ProjectPRN222.Controllers
         }
 
         // GET: InspectionAppointments/Delete/5
-        [RoleAllow(3, 2, 1)]
+        [RoleAllow(3, 1)]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -269,7 +269,7 @@ namespace ProjectPRN222.Controllers
         // POST: InspectionAppointments/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [RoleAllow(3, 2, 1)]
+        [RoleAllow(3, 1)]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var inspectionAppointment = await _context.InspectionAppointments.FindAsync(id);

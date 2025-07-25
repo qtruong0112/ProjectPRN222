@@ -28,6 +28,10 @@
 </style>
 
 <div class="container py-4">
+    @if (TempData["DeleteError"] != null)
+    {
+        <div class="alert alert-danger">@TempData["DeleteError"]</div>
+    }
     <h2 class="mb-4 text-center text-info fw-bold">
         <i class="bi bi-building"></i> Danh sách trạm đăng kiểm
     </h2>
