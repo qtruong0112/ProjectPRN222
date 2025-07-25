@@ -42,7 +42,24 @@
                         </div>
                         <div class="mb-3">
                             <label asp-for="RoleId" class="form-label fw-semibold"></label>
-                            <select asp-for="RoleId" class="form-control rounded-3" asp-items="ViewBag.RoleId"></select>
+                            <select asp-for="RoleId" class="form-control rounded-3" asp-items="ViewBag.RoleId" id="roleSelect"></select>
+                        </div>
+                        <div class="mb-3" id="stationField" style="display: none;">
+                            <label asp-for="StationId" class="form-label fw-semibold">Trạm đăng kiểm</label>
+                            @if (ViewBag.CurrentUserRole == 3)
+                            {
+                                <input type="text" class="form-control rounded-3" 
+                                       value="@ViewBag.CurrentUserStationName" readonly 
+                                       style="background-color: #f8f9fa; cursor: not-allowed;" />
+                                <input type="hidden" asp-for="StationId" value="@ViewBag.CurrentUserStationId" />
+                            }
+                            else
+                            {
+                                <select asp-for="StationId" class="form-control rounded-3" asp-items="ViewBag.StationId">
+                                    <option value="">-- Chọn trạm đăng kiểm --</option>
+                                </select>
+                            }
+                            <span asp-validation-for="StationId" class="text-danger"></span>
                         </div>
                         <div class="d-grid gap-2 mb-2">
                             <button type="submit" class="btn btn-info text-white fw-bold rounded-3">
@@ -65,4 +82,37 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            // Function to toggle station field
+            function toggleStationField() {
+                var roleId = $('#roleSelect').val();
+                @if (ViewBag.CurrentUserRole == 3)
+                {
+                    @* InspectionCenter - chỉ tạo được Worker nên luôn hiển thị station field *@
+                    <text>$('#stationField').show();</text>
+                }
+                else
+                {
+                    @* Admin hoặc Owner - hiển thị theo role được chọn *@
+                    <text>
+                    if (roleId == '2' || roleId == '3') { // Worker role hoặc InspectionCenter role
+                        $('#stationField').show();
+                    } else {
+                        $('#stationField').hide();
+                        $('#StationId').val(''); // Clear selection when hidden
+                    }
+                    </text>
+                }
+            }
+
+            // Initial check
+            toggleStationField();
+
+            // On role change
+            $('#roleSelect').change(function() {
+                toggleStationField();
+            });
+        });
+    </script>
 }

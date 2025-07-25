@@ -22,7 +22,16 @@ namespace ProjectPRN222.Controllers
         // GET: InspectionStations - Với filter - Tất cả user có thể xem
         public async Task<IActionResult> Index(string name = null, string address = null, string email = null)
         {
+            int? currentUserId = HttpContext.Session.GetInt32("UserId");
+            var currentUser = await _context.Users.FindAsync(currentUserId);
+
             var query = _context.InspectionStations.AsQueryable();
+
+            // Nếu user là InspectionCenter (RoleId = 3), chỉ hiển thị trạm của họ
+            if (currentUser != null && currentUser.RoleId == 3 && currentUser.StationId.HasValue)
+            {
+                query = query.Where(s => s.StationId == currentUser.StationId.Value);
+            }
 
             // Apply filters - case insensitive
             if (!string.IsNullOrWhiteSpace(name))
@@ -61,14 +70,14 @@ namespace ProjectPRN222.Controllers
         }
 
         // GET: InspectionStations/Create - Chỉ Admin có thể tạo trạm kiểm định mới
-        [RoleAllow(3, 5)]
+        [RoleAllow(5)]
         public IActionResult Create()
         {
             return View();
         }
 
         // POST: InspectionStations/Create - Chỉ Admin có thể tạo trạm kiểm định mới
-        [RoleAllow(5, 3)]
+        [RoleAllow(5)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("StationId,Name,Address,Phone,Email")] InspectionStation inspectionStation)
@@ -133,8 +142,8 @@ namespace ProjectPRN222.Controllers
             return View(inspectionStation);
         }
 
-        // GET: InspectionStations/Delete/5 
-        [RoleAllow(3, 5)]
+        // GET: InspectionStations/Delete/5 - Chỉ Admin có thể xóa trạm
+        [RoleAllow(5)]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -152,8 +161,8 @@ namespace ProjectPRN222.Controllers
             return View(inspectionStation);
         }
 
-        // POST: InspectionStations/Delete/5 
-        [RoleAllow(3, 5)]
+        // POST: InspectionStations/Delete/5 - Chỉ Admin có thể xóa trạm
+        [RoleAllow(5)]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

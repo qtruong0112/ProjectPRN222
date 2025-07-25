@@ -104,13 +104,22 @@ namespace ProjectPRN222.Controllers
                     return NotFound();
                 }
 
-                var user = await _context.Users.FindAsync(id);
+                var user = await _context.Users
+                    .Include(u => u.Station)
+                    .FirstOrDefaultAsync(u => u.UserId == id);
                 if (user == null)
                 {
                     return NotFound();
                 }
                 ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleId", user.RoleId);
                 ViewBag.StationList = new SelectList(_context.InspectionStations, "StationId", "Name", user.StationId);
+                
+                // Thêm StationName cho Worker và InspectionCenter để hiển thị readonly
+                if ((user.RoleId == 2 || user.RoleId == 3) && user.Station != null)
+                {
+                    ViewBag.StationName = user.Station.Name;
+                }
+                
             return View(user);
             }
 
