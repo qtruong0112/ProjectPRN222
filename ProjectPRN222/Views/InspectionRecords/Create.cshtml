@@ -3,6 +3,10 @@
 @{
     ViewData["Title"] = "Tạo kết quả đăng kiểm";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var isFromAppointment = ViewBag.IsFromAppointment != null && (bool)ViewBag.IsFromAppointment;
+
+    var vehicle = ViewBag.Vehicle as ProjectPRN222.Models.Vehicle;
+    var station = ViewBag.Station as ProjectPRN222.Models.InspectionStation;
 }
 
 <div class="container py-4">
@@ -14,15 +18,40 @@
                     <span class="fs-5 fw-semibold">Tạo kết quả đăng kiểm</span>
                 </div>
                 <div class="card-body">
-                    <form asp-action="Create">
+                    <form asp-action="Create" method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-                        <div class="mb-3">
-                            <label asp-for="VehicleId" class="form-label fw-semibold"></label>
-                            <select asp-for="VehicleId" class="form-select rounded-3" asp-items="ViewBag.VehicleId"></select>
+
+                        <input type="hidden" asp-for="RecordId" />
+                        @if (isFromAppointment)
+                        {
+                            <input type="hidden" name="AppointmentId" value="@ViewBag.AppointmentId" />
+                        }
+
+                        <!-- Vehicle -->
+                        <div class="form-group mb-3">
+                            <label class="fw-bold">Phương tiện</label>
+                            @if (isFromAppointment)
+                            {
+                                <input class="form-control" value="@($"{vehicle.PlateNumber} - {vehicle.Owner.FullName}")" disabled />
+                                <input type="hidden" name="VehicleId" value="@vehicle.VehicleId" />
+                            }
+                            else
+                            {
+                                @Html.DropDownList("VehicleId", ViewData["VehicleId"] as SelectList, "Chọn phương tiện", new { @class = "form-control" })
+                            }
                         </div>
-                        <div class="mb-3">
-                            <label asp-for="StationId" class="form-label fw-semibold"></label>
-                            <select asp-for="StationId" class="form-select rounded-3" asp-items="ViewBag.StationId"></select>
+
+                        <div class="form-group mb-3">
+                            <label class="fw-bold">Trạm đăng kiểm</label>
+                            @if (isFromAppointment)
+                            {
+                                <input class="form-control" value="@station.Name" disabled />
+                                <input type="hidden" name="StationId" value="@station.StationId" />
+                            }
+                            else
+                            {
+                                @Html.DropDownList("StationId", ViewData["StationId"] as SelectList, "Chọn trạm", new { @class = "form-control" })
+                            }
                         </div>
                         <div class="mb-3">
                             <label asp-for="InspectorId" class="form-label fw-semibold"></label>
@@ -56,7 +85,7 @@
                             <button type="submit" class="btn btn-primary rounded-pill px-4">
                                 <i class="bi bi-plus-circle me-1"></i> Tạo mới
                             </button>
-                            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                            <a asp-action="Index" asp-controller="InspectionAppointments" class="btn btn-outline-secondary rounded-pill px-4">
                                 <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
                             </a>
                         </div>
