@@ -34,13 +34,25 @@
                             <input asp-for="Phone" class="form-control rounded-3" placeholder="Số điện thoại" />
                             <span asp-validation-for="Phone" class="text-danger"></span>
                         </div>
-                        @if (Model.RoleId == 2)
+                        @if (Model.RoleId == 2 && Model.StationId.HasValue)
                         {
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold">Trạm đăng kiểm</label>
-                                <input type="text" class="form-control rounded-3" value="@ViewBag.StationName" disabled />
-                                <input type="hidden" asp-for="StationId" />
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Trạm đăng kiểm</label>
+                            <input type="text" class="form-control rounded-3" 
+                                   value="@ViewBag.StationName" readonly 
+                                   style="background-color: #f8f9fa; cursor: not-allowed;" />
+                            <input type="hidden" asp-for="StationId" />
+                        </div>
+                        }
+                        @if (Model.RoleId == 3 && Model.StationId.HasValue)
+                        {
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Trạm đăng kiểm</label>
+                            <input type="text" class="form-control rounded-3" 
+                                   value="@ViewBag.StationName" readonly 
+                                   style="background-color: #f8f9fa; cursor: not-allowed;" />
+                            <input type="hidden" asp-for="StationId" />
+                        </div>
                         }
 
                         <div class="mb-3">

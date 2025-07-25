@@ -57,8 +57,8 @@ namespace ProjectPRN222.Controllers
                     .ThenInclude(v => v.Owner)
                 .AsQueryable();
 
-            // Nếu user hiện tại là công nhân (RoleId = 2), chỉ hiển thị record thuộc trạm của họ
-            if (currentUser != null && currentUser.RoleId == 2 && currentUser.StationId.HasValue)
+            // Nếu user hiện tại là công nhân (RoleId = 2) hoặc InspectionCenter (RoleId = 3), chỉ hiển thị record thuộc trạm của họ
+            if (currentUser != null && (currentUser.RoleId == 2 || currentUser.RoleId == 3) && currentUser.StationId.HasValue)
             {
                 query = query.Where(i => i.StationId == currentUser.StationId.Value);
             }
@@ -90,9 +90,9 @@ namespace ProjectPRN222.Controllers
 
             
 
-            // Dropdown filter trạm - nếu là công nhân thì chỉ hiển thị trạm của họ
+            // Dropdown filter trạm - nếu là công nhân hoặc InspectionCenter thì chỉ hiển thị trạm của họ
             var stations = _context.InspectionStations.AsQueryable();
-            if (currentUser != null && currentUser.RoleId == 2 && currentUser.StationId.HasValue)
+            if (currentUser != null && (currentUser.RoleId == 2 || currentUser.RoleId == 3) && currentUser.StationId.HasValue)
             {
                 stations = stations.Where(s => s.StationId == currentUser.StationId.Value);
             }
@@ -281,9 +281,9 @@ namespace ProjectPRN222.Controllers
 
             ViewData["InspectorId"] = new SelectList(_context.Users.Where(u => u.RoleId == 2), "UserId", "FullName"); // Worker
             
-            // Dropdown trạm - nếu là công nhân thì chỉ hiển thị trạm của họ
+            // Dropdown trạm - nếu là công nhân hoặc InspectionCenter thì chỉ hiển thị trạm của họ
             var stations = _context.InspectionStations.AsQueryable();
-            if (currentUser != null && currentUser.RoleId == 2 && currentUser.StationId.HasValue)
+            if (currentUser != null && (currentUser.RoleId == 2 || currentUser.RoleId == 3) && currentUser.StationId.HasValue)
             {
                 stations = stations.Where(s => s.StationId == currentUser.StationId.Value);
             }
@@ -366,9 +366,9 @@ public async Task<IActionResult> Create(
 
             ViewData["InspectorId"] = new SelectList(_context.Users, "UserId", "FullName", inspectionRecord.InspectorId);
             
-            // Dropdown trạm - nếu là công nhân thì chỉ hiển thị trạm của họ
+            // Dropdown trạm - nếu là công nhân hoặc InspectionCenter thì chỉ hiển thị trạm của họ
             var stations = _context.InspectionStations.AsQueryable();
-            if (currentUser != null && currentUser.RoleId == 2 && currentUser.StationId.HasValue)
+            if (currentUser != null && (currentUser.RoleId == 2 || currentUser.RoleId == 3) && currentUser.StationId.HasValue)
             {
                 stations = stations.Where(s => s.StationId == currentUser.StationId.Value);
             }

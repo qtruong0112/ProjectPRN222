@@ -40,7 +40,7 @@ namespace ProjectPRN222.Controllers
 
             List<InspectionAppointment> appointments;
 
-            if (currentUser.RoleId == 2) // Admin hoặc nhân viên
+            if (currentUser.RoleId == 2 || currentUser.RoleId == 3) // Worker hoặc InspectionCenter
             {
                 appointments = await _context.InspectionAppointments
                     .Include(i => i.Station)

@@ -15,8 +15,31 @@ namespace ProjectPRN222.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(int stationId)
+        public async Task<IActionResult> Index(int stationId = 0)
         {
+            int? currentUserId = HttpContext.Session.GetInt32("UserId");
+            var currentUser = await _context.Users.FindAsync(currentUserId);
+
+            // Nếu user là InspectionCenter (role 3), chỉ cho phép xem thống kê của trạm mình
+            if (currentUser != null && currentUser.RoleId == 3)
+            {
+                if (currentUser.StationId.HasValue)
+                {
+                    stationId = currentUser.StationId.Value;
+                }
+                else
+                {
+                    return BadRequest("Bạn chưa được phân công vào trạm nào.");
+                }
+            }
+
+            // Nếu không có stationId, hiển thị form chọn trạm (chỉ cho Admin)
+            if (stationId == 0)
+            {
+                ViewBag.Stations = await _context.InspectionStations.ToListAsync();
+                return View("SelectStation");
+            }
+
             var station = await _context.InspectionStations
                                 .FirstOrDefaultAsync(s => s.StationId == stationId);
 
