@@ -5,6 +5,8 @@
     using Humanizer;
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+
 namespace ProjectPRN222.Controllers
 {
         public class AccountsController : Controller
@@ -97,36 +99,38 @@ namespace ProjectPRN222.Controllers
                 return RedirectToAction("Login");
             }
 
-            public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
             {
-                if (id == null)
-                {
-                    return NotFound();
-                }
-
-                var user = await _context.Users
-                    .Include(u => u.Station)
-                    .FirstOrDefaultAsync(u => u.UserId == id);
-                if (user == null)
-                {
-                    return NotFound();
-                }
-                ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleId", user.RoleId);
-                ViewBag.StationList = new SelectList(_context.InspectionStations, "StationId", "Name", user.StationId);
-                
-                // Thêm StationName cho Worker và InspectionCenter để hiển thị readonly
-                if ((user.RoleId == 2 || user.RoleId == 3) && user.Station != null)
-                {
-                    ViewBag.StationName = user.Station.Name;
-                }
-                
-            return View(user);
+                return NotFound();
             }
 
-            // POST: Users/Edit/5
-            // To protect from overposting attacks, enable the specific properties you want to bind to.
-            // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-            [HttpPost]
+            var user = await _context.Users
+                .Include(u => u.Station)
+                .FirstOrDefaultAsync(u => u.UserId == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            
+            ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleId", user.RoleId);
+            ViewBag.StationList = new SelectList(_context.InspectionStations, "StationId", "Name", user.StationId);
+            
+            // Thêm StationName cho Worker và InspectionCenter để hiển thị readonly
+            if ((user.RoleId == 2 || user.RoleId == 3) && user.Station != null)
+            {
+                ViewBag.StationName = user.Station.Name;
+            }
+            
+            return View(user);
+        }
+
+
+        // POST: Users/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
             [ValidateAntiForgeryToken]
             public async Task<IActionResult> Edit(int id, [Bind("UserId,FullName,Email,Phone,StationId,Address,RoleId,Password")] User user)
             {

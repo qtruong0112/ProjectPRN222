@@ -228,40 +228,46 @@ namespace ProjectPRN222.Controllers
         [RoleAllow(5, 3, 2)]
         public async Task<IActionResult> CreateFromAppointment(int appointmentId)
         {
+            int? currentUserId = HttpContext.Session.GetInt32("UserId");
+            var currentUser = await _context.Users.FindAsync(currentUserId);
+
+            if (currentUser == null || currentUser.StationId == null)
+                return Forbid();
+
             var appointment = await _context.InspectionAppointments
                 .Include(a => a.User)
                 .Include(a => a.Station)
                 .Include(a => a.Vehicle)
+                    .ThenInclude(v => v.Owner)
                 .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId);
 
             if (appointment == null)
                 return NotFound();
 
-            ViewData["VehicleId"] = new SelectList(_context.Vehicles, "VehicleId", "PlateNumber", appointment.VehicleId);
-            ViewData["StationId"] = new SelectList(_context.InspectionStations, "StationId", "Name", appointment.StationId);
-            ViewData["InspectorId"] = new SelectList(_context.Users.Where(u => u.RoleId == 2), "UserId", "FullName");
-
             var record = new InspectionRecord
             {
                 VehicleId = appointment.VehicleId,
                 StationId = appointment.StationId,
-                InspectionDate = appointment.AppointmentDate
-               
+                InspectionDate = appointment.AppointmentDate,
+                InspectorId = currentUserId.Value
             };
 
-           if( appointmentId > 0)
-            {
-                appointment = await _context.InspectionAppointments.FindAsync(appointmentId);
-                if (appointment != null)
-                {
-                    appointment.Status = "Completed"; 
-                    _context.Update(appointment);
-                    await _context.SaveChangesAsync();
-                }
-            }
+            ViewBag.IsFromAppointment = true;
+            ViewBag.AppointmentId = appointment.AppointmentId;
+            ViewBag.Vehicle = appointment.Vehicle;
+            ViewBag.Station = appointment.Station;
+
+            // ✅ LỌC inspector theo StationId của currentUser
+            var inspectors = await _context.Users
+                .Where(u => u.RoleId == 2 && u.StationId == currentUser.StationId)
+                .ToListAsync();
+
+            ViewBag.InspectorId = new SelectList(inspectors, "UserId", "FullName", currentUserId);
 
             return View("Create", record);
         }
+
+
 
 
 
@@ -300,45 +306,45 @@ namespace ProjectPRN222.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
  
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        [RoleAllow(5, 3, 2)]
-        public async Task<IActionResult> Create([Bind("RecordId,VehicleId,StationId,InspectorId,InspectionDate,Result,Co2emission,Hcemission,Comments")] InspectionRecord inspectionRecord)
+[ValidateAntiForgeryToken]
+[RoleAllow(5, 3, 2)]
+public async Task<IActionResult> Create(
+    [Bind("RecordId,VehicleId,StationId,InspectorId,InspectionDate,Result,Co2emission,Hcemission,Comments")]
+    InspectionRecord inspectionRecord,
+    int? AppointmentId)
+{
+    if (ModelState.IsValid)
+    {
+        _context.Add(inspectionRecord);
+
+        // Nếu tạo từ lịch hẹn, cập nhật trạng thái lịch hẹn
+        if (AppointmentId.HasValue)
         {
-            if (ModelState.IsValid)
+            var appointment = await _context.InspectionAppointments.FindAsync(AppointmentId.Value);
+            if (appointment != null)
             {
-                _context.Add(inspectionRecord);
-                await _context.SaveChangesAsync();
-
-                // Gửi thông báo kết quả kiểm định cho chủ xe
-                try
-                {
-                    var vehicle = await _context.Vehicles
-                        .Include(v => v.Owner)
-                        .FirstOrDefaultAsync(v => v.VehicleId == inspectionRecord.VehicleId);
-                    
-                    if (vehicle != null && vehicle.Owner != null)
-                    {
-                        var vehicleInfo = $"{vehicle.PlateNumber} ({vehicle.Brand} {vehicle.Model})";
-                        await SendInspectionResultNotificationAsync(
-                            vehicle.OwnerId, 
-                            vehicleInfo, 
-                            inspectionRecord.Result ?? "Đang xử lý"
-                        );
-                    }
-                }
-                catch (Exception ex)
-                {
-                    // Log error nhưng không làm gián đoạn process
-                    Console.WriteLine($"Error sending notification: {ex.Message}");
-                }
-
-                return RedirectToAction(nameof(Index));
+                appointment.Status = "Completed";
+                _context.Update(appointment);
             }
-            ViewData["InspectorId"] = new SelectList(_context.Users, "UserId", "UserId", inspectionRecord.InspectorId);
-            ViewData["StationId"] = new SelectList(_context.InspectionStations, "StationId", "StationId", inspectionRecord.StationId);
-            ViewData["VehicleId"] = new SelectList(_context.Vehicles, "VehicleId", "VehicleId", inspectionRecord.VehicleId);
-            return View(inspectionRecord);
         }
+
+        await _context.SaveChangesAsync();
+
+        // Gửi thông báo kết quả
+        var vehicle = await _context.Vehicles.Include(v => v.Owner).FirstOrDefaultAsync(v => v.VehicleId == inspectionRecord.VehicleId);
+        if (vehicle != null && vehicle.Owner != null)
+        {
+            var vehicleInfo = $"{vehicle.PlateNumber} ({vehicle.Brand} {vehicle.Model})";
+            await SendInspectionResultNotificationAsync(vehicle.OwnerId, vehicleInfo, inspectionRecord.Result ?? "Đang xử lý");
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    ViewData["InspectorId"] = new SelectList(_context.Users.Where(u => u.RoleId == 2), "UserId", "FullName", inspectionRecord.InspectorId);
+    return View(inspectionRecord);
+}
+
 
         // GET: InspectionRecords/Edit/5
         [RoleAllow(5, 3, 2)]
