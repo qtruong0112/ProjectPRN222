@@ -289,12 +289,17 @@ namespace ProjectPRN222.Controllers
             }
             ViewData["StationId"] = new SelectList(stations, "StationId", "Name");
 
-            // Hiển thị Vehicle kèm tên chủ xe
-            var vehicles = _context.Vehicles.Include(v => v.Owner).ToList();
-            ViewData["VehicleId"] = new SelectList(vehicles.Select(v => new
+            // Chỉ hiển thị những phương tiện có lịch hẹn với trạng thái "Pending"
+            var pendingAppointments = _context.InspectionAppointments
+                .Include(a => a.Vehicle)
+                    .ThenInclude(v => v.Owner)
+                .Where(a => a.Status == "Pending")
+                .ToList();
+
+            ViewData["VehicleId"] = new SelectList(pendingAppointments.Select(a => new
             {
-                VehicleId = v.VehicleId,
-                Display = v.PlateNumber + " - " + v.Owner.FullName
+                VehicleId = a.Vehicle.VehicleId,
+                Display = a.Vehicle.PlateNumber + " - " + a.Vehicle.Owner.FullName + " (Lịch hẹn: " + a.AppointmentDate.ToString("dd/MM/yyyy HH:mm") + ")"
             }), "VehicleId", "Display");
 
             return View();
@@ -306,19 +311,35 @@ namespace ProjectPRN222.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
  
         [HttpPost]
-[ValidateAntiForgeryToken]
-[RoleAllow(5, 3, 2)]
-public async Task<IActionResult> Create(
-    [Bind("RecordId,VehicleId,StationId,InspectorId,InspectionDate,Result,Co2emission,Hcemission,Comments")]
-    InspectionRecord inspectionRecord,
-    int? AppointmentId)
-{
+        [ValidateAntiForgeryToken]
+        [RoleAllow(5, 3, 2)]
+        public async Task<IActionResult> Create(
+            [Bind("VehicleId,StationId,InspectorId,InspectionDate,Result,Co2emission,Hcemission,Comments")]
+            InspectionRecord inspectionRecord,
+            int? AppointmentId)
+        {
+            // Kiểm tra xem vehicle có lịch hẹn pending không
+            var pendingAppointment = await _context.InspectionAppointments
+                .FirstOrDefaultAsync(a => a.VehicleId == inspectionRecord.VehicleId && a.Status == "Pending");
+            
+            if (pendingAppointment == null && inspectionRecord.VehicleId > 0)
+            {
+                ModelState.AddModelError("VehicleId", "Chỉ có thể tạo phiếu kiểm định cho phương tiện có lịch hẹn đang chờ xử lý (Pending).");
+            }
+
     if (ModelState.IsValid)
     {
         _context.Add(inspectionRecord);
 
-        // Nếu tạo từ lịch hẹn, cập nhật trạng thái lịch hẹn
-        if (AppointmentId.HasValue)
+        // Cập nhật trạng thái lịch hẹn thành "Completed"
+        if (pendingAppointment != null)
+        {
+            pendingAppointment.Status = "Completed";
+            _context.Update(pendingAppointment);
+        }
+
+        // Nếu có AppointmentId được truyền từ parameter, cũng cập nhật
+        if (AppointmentId.HasValue && AppointmentId.Value != pendingAppointment?.AppointmentId)
         {
             var appointment = await _context.InspectionAppointments.FindAsync(AppointmentId.Value);
             if (appointment != null)
@@ -355,12 +376,17 @@ public async Task<IActionResult> Create(
     }
     ViewData["StationId"] = new SelectList(stations, "StationId", "Name", inspectionRecord.StationId);
 
-    // Hiển thị Vehicle kèm tên chủ xe
-    var vehicles = _context.Vehicles.Include(v => v.Owner).ToList();
-    ViewData["VehicleId"] = new SelectList(vehicles.Select(v => new
+    // Chỉ hiển thị những phương tiện có lịch hẹn với trạng thái "Pending"
+    var pendingAppointments = _context.InspectionAppointments
+        .Include(a => a.Vehicle)
+            .ThenInclude(v => v.Owner)
+        .Where(a => a.Status == "Pending")
+        .ToList();
+
+    ViewData["VehicleId"] = new SelectList(pendingAppointments.Select(a => new
     {
-        VehicleId = v.VehicleId,
-        Display = v.PlateNumber + " - " + v.Owner.FullName
+        VehicleId = a.Vehicle.VehicleId,
+        Display = a.Vehicle.PlateNumber + " - " + a.Vehicle.Owner.FullName + " (Lịch hẹn: " + a.AppointmentDate.ToString("dd/MM/yyyy HH:mm") + ")"
     }), "VehicleId", "Display", inspectionRecord.VehicleId);
 
     return View(inspectionRecord);
